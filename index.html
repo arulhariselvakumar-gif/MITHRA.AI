@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="MITHRA is a companion app that listens. Talk through what's on your mind, any time.">
+<meta name="theme-color" content="#F5F7FD">
+
+
+<title>MITHRA &middot; Man Ka Mitra AI</title>
+
+<link rel="icon" href="favicon.png">
+<link rel="logo.png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Karla:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24">
+      <path d="M3.6 10.1 12 3.5l8.4 6.6V20a1 1 0 0 1-1 1h-4.6v-6H9.2v6H4.6a1 1 0 0 1-1-1z"/>
+    </symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24">
+      <path d="M21 12.5A7.5 7.5 0 0 1 13.5 20H8l-5 3 1.3-4.3A7.5 7.5 0 0 1 10.5 5h3A7.5 7.5 0 0 1 21 12.5z"/>
+    </symbol>
+    <symbol id="i-book" viewBox="0 0 24 24">
+      <path d="M4 4.5A2 2 0 0 1 6 3h13v15H6a2 2 0 0 0-2 2z"/>
+      <path d="M19 18v3H6a2 2 0 0 1-2-2"/>
+      <path d="M8.5 7.5h7M8.5 11h5"/>
+    </symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M3.5 9.5h17M3.5 14.5h17"/>
+      <path d="M12 3c-2.5 2.6-3.7 5.6-3.7 9s1.2 6.4 3.7 9c2.5-2.6 3.7-5.6 3.7-9S14.5 5.6 12 3z"/>
+    </symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24">
+      <path d="M12 5v14M5 12h14"/>
+    </symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24">
+      <path d="M4.5 7h15M9.5 7V4.8h5V7M6.5 7l.8 12.2a1 1 0 0 0 1 .95h7.4a1 1 0 0 0 1-.95L17.5 7"/>
+    </symbol>
+    <symbol id="i-user" viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4.5 21a7.5 7.5 0 0 1 15 0"/>
+    </symbol>
+    <symbol id="i-back" viewBox="0 0 24 24">
+      <path d="M15 5 8 12l7 7"/>
+    </symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24">
+      <path d="M2.5 12S6 5.8 12 5.8 21.5 12 21.5 12 18 18.2 12 18.2 2.5 12 2.5 12z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24">
+      <path d="M9.6 6.2A8.7 8.7 0 0 1 12 5.8c6 0 9.5 6.2 9.5 6.2a16 16 0 0 1-3 3.7M6 7.9A16 16 0 0 0 2.5 12S6 18.2 12 18.2a8.6 8.6 0 0 0 3.4-.7"/>
+      <path d="m4 4 16 16"/>
+    </symbol>
+    <symbol id="i-send" viewBox="0 0 24 24">
+      <path d="M4 12 20 4l-5 16-3.4-6.2z"/>
+      <path d="m11.6 13.8 8.4-9.8"/>
+    </symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24">
+      <path d="M6 9a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 13 6 9z"/>
+      <path d="M10 18a2 2 0 0 0 4 0"/>
+    </symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24">
+      <path d="M12 3l7 3v5.5c0 4.6-3 7.8-7 9.5-4-1.7-7-4.9-7-9.5V6z"/>
+      <path d="m9 12 2 2 4-4"/>
+    </symbol>
+    <symbol id="i-broom" viewBox="0 0 24 24">
+      <path d="M4 20h16"/>
+      <path d="M7 20v-4h10v4"/>
+      <path d="M12 16V4"/>
+    </symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24">
+      <path d="m9 5 7 7-7 7"/>
+    </symbol>
+  </defs>
+</svg>
+
+
+
+<section class="view view--center view--splash" id="view-splash" data-view="splash">
+  <div class="splash">
+    <span class="splash__halo" aria-hidden="true"></span>
+    <img src="logo.png" alt="" class="splash__mark" width="200" height="200">
+    <h1 class="wordmark wordmark--xl">MITHRA</h1>
+    <p class="wordmark__sub">Man Ka Mitra AI</p>
+  </div>
+</section>
+
+
+
+<section class="view view--center" id="view-welcome" data-view="welcome" hidden>
+  <div class="panel panel--bare">
+    <img src="logo.png" alt="MITHRA" class="mark" width="150" height="150">
+    <h1 class="wordmark">MITHRA</h1>
+    <p class="wordmark__sub">Man Ka Mitra AI</p>
+
+    <p class="lede">A friend you can talk to at 3am, when you don't want to wake anyone up.</p>
+
+    <div class="stack">
+      <button type="button" class="btn btn--brand" data-goto="signup">Create an account</button>
+      <button type="button" class="btn btn--outline" data-goto="login">I already have one</button>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="view view--center" id="view-signup" data-view="signup" hidden>
+  <div class="panel">
+    <button type="button" class="icon-btn icon-btn--back" data-goto="welcome" aria-label="Back to start">
+      <svg class="icon"><use href="#i-back"></use></svg>
+    </button>
+
+    <h2 class="panel__title">Create your account</h2>
+    <p class="panel__note">Everything you write stays on this device.</p>
+
+    <form id="form-signup" novalidate>
+      <div class="field">
+        <label for="signup-name">Name</label>
+        <input type="text" id="signup-name" name="name" autocomplete="name"
+               placeholder="What should MITHRA call you?" required>
+        <p class="field__error" data-error-for="signup-name" role="alert"></p>
+      </div>
+
+      <div class="field">
+        <label for="signup-email">Email</label>
+        <input type="email" id="signup-email" name="email" autocomplete="email"
+               placeholder="you@example.com" required>
+        <p class="field__error" data-error-for="signup-email" role="alert"></p>
+      </div>
+
+      <div class="field field--password">
+        <label for="signup-password">Password</label>
+        <input type="password" id="signup-password" name="password" autocomplete="new-password"
+               placeholder="At least 8 characters" required>
+        <button type="button" class="icon-btn icon-btn--reveal" data-reveal="signup-password"
+                aria-label="Show password" aria-pressed="false">
+          <svg class="icon"><use href="#i-eye"></use></svg>
+        </button>
+
+        <div class="meter" data-meter hidden>
+          <div class="meter__track"><span class="meter__fill" data-meter-fill></span></div>
+          <p class="meter__label" data-meter-label></p>
+        </div>
+
+        <p class="field__error" data-error-for="signup-password" role="alert"></p>
+      </div>
+
+      <button type="submit" class="btn btn--brand">Create account</button>
+    </form>
+
+    <p class="panel__foot">
+      Already registered?
+      <button type="button" class="link" data-goto="login">Log in</button>
+    </p>
+  </div>
+</section>
+
+
+
+<section class="view view--center" id="view-login" data-view="login" hidden>
+  <div class="panel">
+    <button type="button" class="icon-btn icon-btn--back" data-goto="welcome" aria-label="Back to start">
+      <svg class="icon"><use href="#i-back"></use></svg>
+    </button>
+
+    <h2 class="panel__title">Welcome back</h2>
+    <p class="panel__note">Pick up wherever you left off.</p>
+
+    <form id="form-login" novalidate>
+      <div class="field">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" name="email" autocomplete="email"
+               placeholder="you@example.com" required>
+        <p class="field__error" data-error-for="login-email" role="alert"></p>
+      </div>
+
+      <div class="field field--password">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" name="password" autocomplete="current-password"
+               placeholder="Your password" required>
+        <button type="button" class="icon-btn icon-btn--reveal" data-reveal="login-password"
+                aria-label="Show password" aria-pressed="false">
+          <svg class="icon"><use href="#i-eye"></use></svg>
+        </button>
+        <p class="field__error" data-error-for="login-password" role="alert"></p>
+      </div>
+
+      <div class="field__aside">
+        <button type="button" class="link" data-goto="forgot">Forgot your password?</button>
+      </div>
+
+      <button type="submit" class="btn btn--brand">Log in</button>
+    </form>
+
+    <p class="panel__foot">
+      New here?
+      <button type="button" class="link" data-goto="signup">Create an account</button>
+    </p>
+  </div>
+</section>
+
+
+
+<section class="view view--center" id="view-forgot" data-view="forgot" hidden>
+  <div class="panel">
+    <button type="button" class="icon-btn icon-btn--back" data-goto="login" aria-label="Back to log in">
+      <svg class="icon"><use href="#i-back"></use></svg>
+    </button>
+
+    <h2 class="panel__title">Reset your password</h2>
+    <p class="panel__note">Confirm the email you signed up with.</p>
+
+    <form id="form-forgot" novalidate>
+      <div class="field">
+        <label for="forgot-email">Email</label>
+        <input type="email" id="forgot-email" name="email" autocomplete="email"
+               placeholder="you@example.com" required>
+        <p class="field__error" data-error-for="forgot-email" role="alert"></p>
+      </div>
+
+      <button type="submit" class="btn btn--brand">Continue</button>
+    </form>
+  </div>
+</section>
+
+
+
+<section class="view view--center" id="view-reset" data-view="reset" hidden>
+  <div class="panel">
+    <button type="button" class="icon-btn icon-btn--back" data-goto="forgot" aria-label="Back">
+      <svg class="icon"><use href="#i-back"></use></svg>
+    </button>
+
+    <h2 class="panel__title">Set a new password</h2>
+    <p class="panel__note">Choose something you haven't used before.</p>
+
+    <form id="form-reset" novalidate>
+      <div class="field field--password">
+        <label for="reset-password">New password</label>
+        <input type="password" id="reset-password" name="password" autocomplete="new-password"
+               placeholder="At least 8 characters" required>
+        <button type="button" class="icon-btn icon-btn--reveal" data-reveal="reset-password"
+                aria-label="Show password" aria-pressed="false">
+          <svg class="icon"><use href="#i-eye"></use></svg>
+        </button>
+
+        <div class="meter" data-meter hidden>
+          <div class="meter__track"><span class="meter__fill" data-meter-fill></span></div>
+          <p class="meter__label" data-meter-label></p>
+        </div>
+
+        <p class="field__error" data-error-for="reset-password" role="alert"></p>
+      </div>
+
+      <div class="field field--password">
+        <label for="reset-confirm">Confirm password</label>
+        <input type="password" id="reset-confirm" name="confirm" autocomplete="new-password"
+               placeholder="Type it once more" required>
+        <button type="button" class="icon-btn icon-btn--reveal" data-reveal="reset-confirm"
+                aria-label="Show password" aria-pressed="false">
+          <svg class="icon"><use href="#i-eye"></use></svg>
+        </button>
+        <p class="field__error" data-error-for="reset-confirm" role="alert"></p>
+      </div>
+
+      <button type="submit" class="btn btn--brand">Save password</button>
+    </form>
+  </div>
+</section>
+
+
+<div class="app" id="app" hidden>
+
+  <section class="view view--app" id="view-home" data-view="home" hidden>
+    <header class="topbar">
+      <div>
+        <p class="topbar__eyebrow" id="greeting">Hello</p>
+        <h2 class="topbar__name" id="display-name">Friend</h2>
+      </div>
+      <img src="logo.png" alt="" class="topbar__mark" width="44" height="44">
+    </header>
+
+    <main class="scroll">
+      <section class="hero">
+        <span class="hero__halo" aria-hidden="true"></span>
+        <img src="logo.png" alt="" class="hero__mark" width="120" height="120">
+        <h1 class="wordmark">MITHRA</h1>
+        <p class="wordmark__sub">Man Ka Mitra AI</p>
+      </section>
+
+      <section class="card">
+        <h3 class="card__title">What's on your mind?</h3>
+        <p class="card__body">No topic is too small. Start anywhere and MITHRA will follow.</p>
+        <button type="button" class="btn btn--brand btn--inline" data-ask>Ask MITHRA</button>
+      </section>
+
+      <section class="prompts">
+        <h3 class="prompts__title">Or open with one of these</h3>
+        <div class="prompts__row">
+          <button type="button" class="chip" data-prompt="I've been feeling low all week.">Feeling low</button>
+          <button type="button" class="chip" data-prompt="I'm stressed about my exams.">Exam stress</button>
+          <button type="button" class="chip" data-prompt="I can't sleep properly these days.">Can't sleep</button>
+          <button type="button" class="chip" data-prompt="I had a fight at home today.">Trouble at home</button>
+          <button type="button" class="chip" data-prompt="I just want to talk to someone.">Just want to talk</button>
+        </div>
+      </section>
+    </main>
+  </section>
+
+  <!-- ---------- Chat ---------- -->
+  <section class="view view--app view--chat" id="view-chat" data-view="chat" hidden>
+    <header class="topbar topbar--chat">
+      <button type="button" class="icon-btn" data-goto="home" aria-label="Back to home">
+        <svg class="icon"><use href="#i-back"></use></svg>
+      </button>
+      <img src="logo.png" alt="" class="topbar__mark topbar__mark--sm" width="38" height="38">
+      <div class="topbar__id">
+        <h3>MITHRA</h3>
+        <button type="button" class="lang-pill" id="chat-language" data-goto="language">
+          <svg class="icon"><use href="#i-globe"></use></svg>
+          <span id="chat-language-label">English</span>
+        </button>
+      </div>
+      <button type="button" class="icon-btn" id="clear-thread" aria-label="Clear this conversation">
+        <svg class="icon"><use href="#i-broom"></use></svg>
+      </button>
+    </header>
+
+    <main class="thread" id="thread" role="log" aria-live="polite" aria-label="Conversation with MITHRA"></main>
+
+    <form class="composer" id="form-chat">
+      <label class="sr-only" for="chat-input">Write a message</label>
+      <input type="text" id="chat-input" placeholder="Say anything&hellip;"
+             autocomplete="off" maxlength="600">
+      <button type="submit" class="composer__send" aria-label="Send message">
+        <svg class="icon"><use href="#i-send"></use></svg>
+      </button>
+    </form>
+  </section>
+
+  <!-- ---------- Language picker ---------- -->
+  <section class="view view--app" id="view-language" data-view="language" hidden>
+    <header class="topbar topbar--chat">
+      <button type="button" class="icon-btn" data-goto="home" aria-label="Back to home">
+        <svg class="icon"><use href="#i-back"></use></svg>
+      </button>
+      <div class="topbar__id">
+        <h3>Choose a language</h3>
+        <p>Change it any time</p>
+      </div>
+    </header>
+
+    <main class="scroll">
+      <p class="lede lede--flush">Which one feels easiest to talk in? MITHRA will reply the same way.</p>
+
+      <div class="langs" role="radiogroup" aria-label="Conversation language">
+        <button type="button" class="lang" role="radio" aria-checked="false" data-lang="ta">
+          <span class="lang__name" lang="ta">&#2980;&#2990;&#3007;&#2996;&#3021;</span>
+          <span class="lang__note">Tamil</span>
+        </button>
+
+        <button type="button" class="lang" role="radio" aria-checked="false" data-lang="en">
+          <span class="lang__name">English</span>
+          <span class="lang__note">Plain English</span>
+        </button>
+
+        <button type="button" class="lang" role="radio" aria-checked="false" data-lang="tanglish">
+          <span class="lang__name">Tanglish</span>
+          <span class="lang__note">Tamil in English letters</span>
+        </button>
+
+        <button type="button" class="lang" role="radio" aria-checked="false" data-lang="hinglish">
+          <span class="lang__name">Hinglish</span>
+          <span class="lang__note">Hindi in English letters</span>
+        </button>
+
+        <button type="button" class="lang" role="radio" aria-checked="false" data-lang="other">
+          <span class="lang__name">Other</span>
+          <span class="lang__note">Tell MITHRA which one</span>
+        </button>
+      </div>
+
+      <div class="field lang__other" id="language-other" hidden>
+        <label for="language-other-input">Which language?</label>
+        <input type="text" id="language-other-input" placeholder="Malayalam, Telugu, Russian&hellip;"
+               maxlength="30" autocomplete="off">
+        <p class="field__error" data-error-for="language-other-input" role="alert"></p>
+      </div>
+
+      <button type="button" class="btn btn--brand" id="language-confirm">Start talking</button>
+    </main>
+  </section>
+
+  <!-- ---------- Diary ---------- -->
+  <section class="view view--app" id="view-diary" data-view="diary" hidden>
+    <header class="topbar">
+      <div>
+        <p class="topbar__eyebrow">Only you can read this</p>
+        <h2 class="topbar__name">Diary</h2>
+      </div>
+      <img src="logo.png" alt="" class="topbar__mark" width="44" height="44">
+    </header>
+
+    <main class="scroll">
+      <form class="entry-form" id="form-diary">
+        <div class="moods" role="radiogroup" aria-label="How today felt">
+          <button type="button" class="chip" role="radio" aria-checked="false" data-mood="good">Good</button>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-mood="okay">Okay</button>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-mood="low">Low</button>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-mood="anxious">Anxious</button>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-mood="angry">Angry</button>
+        </div>
+
+        <label class="sr-only" for="diary-text">Write an entry</label>
+        <textarea id="diary-text" rows="4" maxlength="2000"
+                  placeholder="What happened today?"></textarea>
+
+        <div class="entry-form__foot">
+          <span class="counter" id="diary-count">0 / 2000</span>
+          <button type="submit" class="btn btn--brand btn--inline">
+            <svg class="icon"><use href="#i-plus"></use></svg>
+            Save entry
+          </button>
+        </div>
+      </form>
+
+      <div class="entries" id="entries"></div>
+    </main>
+  </section>
+
+  <!-- ---------- Profile ---------- -->
+  <section class="view view--app" id="view-profile" data-view="profile" hidden>
+    <main class="scroll scroll--flush">
+      <header class="profile">
+        <img src="logo.png" alt="" class="profile__mark" width="96" height="96">
+        <h2 id="profile-name">Friend</h2>
+        <p id="profile-email">you@example.com</p>
+        <p class="profile__since" id="profile-since"></p>
+      </header>
+
+      <div class="rows">
+        <button type="button" class="row" data-toast="Profile editing is coming soon.">
+          <svg class="icon row__icon"><use href="#i-user"></use></svg>
+          <span>Your details</span>
+          <svg class="icon row__chevron"><use href="#i-chevron"></use></svg>
+        </button>
+
+        <button type="button" class="row" data-toast="Reminders are coming soon.">
+          <svg class="icon row__icon"><use href="#i-bell"></use></svg>
+          <span>Reminders</span>
+          <svg class="icon row__chevron"><use href="#i-chevron"></use></svg>
+        </button>
+
+        <button type="button" class="row" data-toast="Your conversations never leave this device.">
+          <svg class="icon row__icon"><use href="#i-shield"></use></svg>
+          <span>Privacy</span>
+          <svg class="icon row__chevron"><use href="#i-chevron"></use></svg>
+        </button>
+
+        <button type="button" class="row" id="wipe-history">
+          <svg class="icon row__icon"><use href="#i-broom"></use></svg>
+          <span>Delete conversation history</span>
+          <svg class="icon row__chevron"><use href="#i-chevron"></use></svg>
+        </button>
+      </div>
+
+      <button type="button" class="btn btn--quiet" id="logout">Log out</button>
+
+      <p class="fineprint">
+        MITHRA listens, but it isn't a therapist. If things feel heavy, please talk to
+        someone you trust or call Tele-MANAS on 14416.
+      </p>
+    </main>
+  </section>
+
+  <!-- ---------- Tab bar ---------- -->
+  <nav class="tabs" aria-label="Main">
+    <button type="button" class="tab" data-goto="home" aria-current="page">
+      <svg class="icon"><use href="#i-home"></use></svg>
+      <span>Home</span>
+    </button>
+    <button type="button" class="tab" data-goto="diary">
+      <svg class="icon"><use href="#i-book"></use></svg>
+      <span>Diary</span>
+    </button>
+    <button type="button" class="tab" data-goto="profile">
+      <svg class="icon"><use href="#i-user"></use></svg>
+      <span>Profile</span>
+    </button>
+  </nav>
+
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
