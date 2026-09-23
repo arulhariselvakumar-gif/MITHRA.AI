@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mithra — Diary</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="screen">
+    <img class="mithra-mark" src="assets/logo.png" alt="Mithra logo" />
+    <h2 style="text-align:center; margin-top:14px;">Diary Screen</h2>
+
+    <div class="stack">
+      <button class="tile" id="writeTile"><span class="icon">&#9998;</span> Write</button>
+      <button class="tile" id="recordTile"><span class="icon">&#127908;</span> Record</button>
+      <button class="tile" id="uploadTile"><span class="icon">&#8593;</span> Upload in diary</button>
+    </div>
+    <input type="file" id="fileInput" class="hidden" accept="image/*,audio/*,.pdf,.txt" />
+
+    <!-- Write modal -->
+    <div id="writeModal" class="hidden" style="margin-top:18px;">
+      <div class="field">
+        <textarea id="writeText" rows="4" placeholder="What's on your mind today?"></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="cancelWrite">Cancel</button>
+        <button class="btn btn-primary" id="saveWrite">Save entry</button>
+      </div>
+    </div>
+
+    <div class="error" id="err"></div>
+
+    <h3 style="margin-top: 26px;">Your entries</h3>
+    <div id="entries"></div>
+  </div>
+
+  <nav class="navbar">
+    <a href="chat.html"><span class="navicon">&#128172;</span>Home</a>
+    <a href="diary.html" class="active"><span class="navicon">&#128214;</span>Diary</a>
+    <a href="emergency.html"><span class="navicon">&#9742;</span>SOS</a>
+    <a href="profile.html"><span class="navicon">&#128100;</span>Profile</a>
+  </nav>
+
+  <script src="js/api.js"></script>
+  <script>
+    requireLogin();
+    const errEl = document.getElementById("err");
+
+    // ---- Write ----
+    document.getElementById("writeTile").onclick = () => {
+      document.getElementById("writeModal").classList.remove("hidden");
+    };
+    document.getElementById("cancelWrite").onclick = () => {
+      document.getElementById("writeModal").classList.add("hidden");
+      document.getElementById("writeText").value = "";
+    };
+    document.getElementById("saveWrite").onclick = async () => {
+      const content = document.getElementById("writeText").value.trim();
+      if (!content) return;
+      try {
+        await api("/diary/write", { method: "POST", body: { content } });
+        document.getElementById("writeText").value = "";
+        document.getElementById("writeModal").classList.add("hidden");
+        loadEntries();
+      } catch (err) { errEl.textContent = err.message; }
+    };
+
+    // ---- Record ----
+    let mediaRecorder, chunks = [], recording = false;
+    document.getElementById("recordTile").onclick = async () => {
+      const tile = document.getElementById("recordTile");
+      if (!recording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          chunks = [];
+          mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+          mediaRecorder.onstop = async () => {
+            const blob = new Blob(chunks, { type: "audio/webm" });
+            const form = new FormData();
+            form.append("audio", blob, "diary-note.webm");
+            try {
+              await api("/diary/record", { method: "POST", body: form, isForm: true });
+              loadEntries();
+            } catch (err) { errEl.textContent = err.message; }
+            stream.getTracks().forEach((t) => t.stop());
+          };
+          mediaRecorder.start();
+          recording = true;
+          tile.classList.add("recording");
+          tile.querySelector(".icon").innerHTML = "&#9209;";
+          tile.lastChild.textContent = " Recording... tap to stop";
+        } catch (err) {
+          errEl.textContent = "Microphone permission is needed to record.";
+        }
+      } else {
+        mediaRecorder.stop();
+        recording = false;
+        tile.classList.remove("recording");
+        tile.querySelector(".icon").innerHTML = "&#127908;";
+        tile.lastChild.textContent = " Record";
+      }
+    };
+
+    // ---- Upload ----
+    document.getElementById("uploadTile").onclick = () => document.getElementById("fileInput").click();
+    document.getElementById("fileInput").addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const form = new FormData();
+      form.append("file", file);
+      try {
+        await api("/diary/upload", { method: "POST", body: form, isForm: true });
+        loadEntries();
+      } catch (err) { errEl.textContent = err.message; }
+      e.target.value = "";
+    });
+
+    // ---- Feed ----
+    function fmtTime(unix) {
+      return new Date(unix * 1000).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+    }
+    async function loadEntries() {
+      const list = document.getElementById("entries");
+      list.innerHTML = "Loading...";
+      try {
+        const rows = await api("/diary/");
+        if (rows.length === 0) { list.innerHTML = '<p class="sub">No entries yet — write, record, or upload something.</p>'; return; }
+        list.innerHTML = "";
+        rows.forEach((r) => {
+          const div = document.createElement("div");
+          div.className = "diary-entry" + (r.auto_logged ? " auto" : "");
+          const tagText = r.auto_logged ? "AI auto-logged" : r.type;
+          let body = "";
+          if (r.content) body += `<div>${escapeHtml(r.content)}</div>`;
+          if (r.file_path && r.type === "record") body += `<audio controls src="http://localhost:4000${r.file_path}"></audio>`;
+          if (r.file_path && r.type === "upload") {
+            if (/\.(png|jpg|jpeg|gif|webp)$/i.test(r.file_path)) {
+              body += `<img src="http://localhost:4000${r.file_path}" />`;
+            } else {
+              body += `<a class="link-btn" href="http://localhost:4000${r.file_path}" target="_blank">View uploaded file</a>`;
+            }
+          }
+          div.innerHTML = `<div class="meta"><span>${fmtTime(r.created_at)}</span><span class="tag">${tagText}</span></div>${body}`;
+          list.appendChild(div);
+        });
+      } catch (err) {
+        list.innerHTML = "";
+        errEl.textContent = err.message;
+      }
+    }
+    function escapeHtml(s) {
+      const d = document.createElement("div"); d.textContent = s; return d.innerHTML;
+    }
+
+    loadEntries();
+  </script>
+</body>
+</html>

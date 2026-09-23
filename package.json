@@ -1,0 +1,21 @@
+{
+  "name": "mithra",
+  "version": "1.0.0",
+  "description": "Mithra — Man Ka Mitra AI: Mental Wellbeing Companion with Tanglish & Hinglish Voice Architecture",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "install:all": "npm --prefix backend install && pip install -r backend/ai_service/requirements.txt"
+  },
+  "keywords": [
+    "mithra",
+    "mental-health",
+    "ai-companion",
+    "tanglish",
+    "hinglish",
+    "voice-ai"
+  ],
+  "author": "",
+  "license": "ISC"
+}

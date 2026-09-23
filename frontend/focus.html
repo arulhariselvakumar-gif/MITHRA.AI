@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mithra — Focus</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="screen" style="align-items:center; text-align:center;">
+    <img class="mithra-mark" src="assets/logo.png" alt="Mithra logo" />
+    <h2 style="margin-top:14px;">Focus</h2>
+    <p class="sub">Sit with Mithra and lock in for a while.</p>
+
+    <div class="timer-ring" id="ring">
+      <div class="inner"><span id="timeLabel">25:00</span></div>
+    </div>
+
+    <div class="btn-row" style="max-width: 280px;">
+      <button class="btn btn-ghost" id="minus">-5 min</button>
+      <button class="btn btn-ghost" id="plus">+5 min</button>
+    </div>
+    <button class="btn btn-primary" id="startBtn" style="max-width:280px; margin-top:14px;">Start</button>
+  </div>
+
+  <nav class="navbar">
+    <a href="chat.html"><span class="navicon">&#128172;</span>Home</a>
+    <a href="diary.html"><span class="navicon">&#128214;</span>Diary</a>
+    <a href="emergency.html"><span class="navicon">&#9742;</span>SOS</a>
+    <a href="profile.html"><span class="navicon">&#128100;</span>Profile</a>
+  </nav>
+
+  <script src="js/api.js"></script>
+  <script>
+    requireLogin();
+
+    let totalSeconds = 25 * 60;
+    let remaining = totalSeconds;
+    let running = false;
+    let intervalId = null;
+
+    const ring = document.getElementById("ring");
+    const label = document.getElementById("timeLabel");
+
+    function render() {
+      const m = Math.floor(remaining / 60).toString().padStart(2, "0");
+      const s = (remaining % 60).toString().padStart(2, "0");
+      label.textContent = `${m}:${s}`;
+      const pct = 100 - Math.round((remaining / totalSeconds) * 100);
+      ring.style.setProperty("--pct", pct);
+    }
+
+    document.getElementById("minus").onclick = () => {
+      if (running) return;
+      totalSeconds = Math.max(5 * 60, totalSeconds - 5 * 60);
+      remaining = totalSeconds; render();
+    };
+    document.getElementById("plus").onclick = () => {
+      if (running) return;
+      totalSeconds = Math.min(120 * 60, totalSeconds + 5 * 60);
+      remaining = totalSeconds; render();
+    };
+
+    async function logSession(completed) {
+      try {
+        await api("/focus/session", {
+          method: "POST",
+          body: { durationSeconds: totalSeconds - remaining, completed },
+        });
+      } catch (e) { /* non-critical */ }
+    }
+
+    const startBtn = document.getElementById("startBtn");
+    startBtn.onclick = () => {
+      if (!running) {
+        running = true;
+        startBtn.textContent = "Stop";
+        intervalId = setInterval(() => {
+          remaining--;
+          render();
+          if (remaining <= 0) {
+            clearInterval(intervalId);
+            running = false;
+            startBtn.textContent = "Start";
+            logSession(true);
+            remaining = totalSeconds;
+            render();
+          }
+        }, 1000);
+      } else {
+        clearInterval(intervalId);
+        running = false;
+        startBtn.textContent = "Start";
+        logSession(false);
+        remaining = totalSeconds;
+        render();
+      }
+    };
+
+    render();
+  </script>
+</body>
+</html>

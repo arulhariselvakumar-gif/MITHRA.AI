@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mithra — Profile</title>
+<link rel="stylesheet" href="css/style.css" />
+<style>
+  .profile-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 22px;
+    padding-top: 8px;
+  }
+  .avatar-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--skyblue));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    color: #ffffff;
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 700;
+    box-shadow: 0 8px 24px rgba(61, 107, 255, 0.35);
+    margin-bottom: 12px;
+    border: 3px solid rgba(238, 242, 255, 0.18);
+  }
+  .user-display-name {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin: 0 0 2px;
+    color: var(--paper);
+  }
+  .user-display-email {
+    font-size: 0.85rem;
+    color: var(--mist);
+    margin: 0;
+  }
+
+  .card-section {
+    background: var(--card);
+    border: 1px solid rgba(170, 183, 232, 0.14);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 14px;
+  }
+  .card-section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--paper);
+  }
+  .card-section-title .title-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .lang-display-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+  }
+  .lang-badge {
+    background: rgba(87, 184, 255, 0.15);
+    color: var(--skyblue);
+    border: 1px solid rgba(87, 184, 255, 0.35);
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+  .change-lang-btn {
+    background: none;
+    border: 1px solid rgba(170, 183, 232, 0.25);
+    color: var(--skyblue);
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .change-lang-btn:hover {
+    background: rgba(87, 184, 255, 0.1);
+  }
+
+  .connections-desc {
+    font-size: 0.86rem;
+    color: var(--mist);
+    line-height: 1.4;
+    margin: 0 0 12px;
+  }
+  .add-friend-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(61, 107, 255, 0.15);
+    border: 1.5px dashed rgba(87, 184, 255, 0.45);
+    color: var(--skyblue);
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .add-friend-btn:hover {
+    background: rgba(61, 107, 255, 0.25);
+  }
+  .future-scope-banner {
+    background: rgba(14, 27, 62, 0.85);
+    border-left: 3px solid var(--skyblue);
+    border-radius: 0 10px 10px 0;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    color: var(--mist);
+    margin-top: 10px;
+    line-height: 1.35;
+  }
+
+  .safety-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.83rem;
+    color: var(--mist);
+    margin-bottom: 8px;
+    line-height: 1.35;
+  }
+  .safety-item:last-child {
+    margin-bottom: 0;
+  }
+  .safety-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(11, 19, 48, 0.85);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 200;
+  }
+  .modal-card {
+    background: var(--card);
+    border: 1px solid rgba(87, 184, 255, 0.35);
+    border-radius: var(--radius);
+    padding: 22px;
+    max-width: 320px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+  }
+  .modal-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+    color: var(--paper);
+  }
+  .modal-body {
+    font-size: 0.86rem;
+    color: var(--mist);
+    line-height: 1.4;
+    margin-bottom: 16px;
+  }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <!-- Header / Avatar -->
+    <div class="profile-hero">
+      <div class="avatar-circle" id="userAvatar">M</div>
+      <h2 class="user-display-name" id="userName">User</h2>
+      <p class="user-display-email" id="userEmail">user@example.com</p>
+    </div>
+
+    <!-- Language Setting Section -->
+    <div class="card-section">
+      <div class="card-section-title">
+        <span class="title-left"><span>🌐</span> Language Preference</span>
+      </div>
+      <div class="lang-display-row">
+        <span class="lang-badge" id="currentLangBadge">English</span>
+        <a href="language.html" class="change-lang-btn">Change ❯</a>
+      </div>
+    </div>
+
+    <!-- Connections (Future Scope Extension) -->
+    <div class="card-section">
+      <div class="card-section-title">
+        <span class="title-left"><span>👥</span> Connections</span>
+      </div>
+      <p class="connections-desc">
+        Connect with trusted people to build a support circle with people you choose.
+      </p>
+      <button type="button" class="add-friend-btn" id="addFriendBtn">
+        <span>+</span> Add Friend
+      </button>
+      <div class="future-scope-banner">
+        ℹ️ Peer connections and private/group conversations are planned for a future release.
+      </div>
+    </div>
+
+    <!-- Privacy & Safety Section -->
+    <div class="card-section">
+      <div class="card-section-title">
+        <span class="title-left"><span>🛡️</span> Privacy & Safety</span>
+      </div>
+      <div class="safety-item">
+        <span class="safety-icon">🔒</span>
+        <span><strong>Local-First AI:</strong> All conversation reasoning runs locally on your device via quantized Qwen model.</span>
+      </div>
+      <div class="safety-item">
+        <span class="safety-icon">🚨</span>
+        <span><strong>Deterministic Safety:</strong> Crisis distress activates instant guardrails with Tele-MANAS (14416) and 112 routing.</span>
+      </div>
+      <div class="safety-item">
+        <span class="safety-icon">📔</span>
+        <span><strong>Confidential Diary:</strong> Personal reflections and recordings stay confidential to your account.</span>
+      </div>
+    </div>
+
+    <!-- Logout Action Button -->
+    <div style="margin-top: 8px; margin-bottom: 24px;">
+      <button type="button" class="btn btn-outline" id="profileLogoutBtn" style="border-color: rgba(232,93,93,0.5); color: #ff8585;">
+        <span>🚪</span> Log out
+      </button>
+    </div>
+  </div>
+
+  <!-- Add Friend Future Scope Modal -->
+  <div id="comingSoonModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div style="font-size: 2.2rem; margin-bottom: 8px;">🤝</div>
+      <h3 class="modal-title">Coming Soon</h3>
+      <p class="modal-body">
+        Peer connections and private support circles are scheduled for a future update. Your primary companion and emergency escalation remain active 24/7.
+      </p>
+      <button class="btn btn-primary" id="closeModalBtn" style="padding: 10px 16px;">Got it</button>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation: Home | Diary | SOS | Profile -->
+  <nav class="navbar">
+    <a href="chat.html"><span class="navicon">&#128172;</span>Home</a>
+    <a href="diary.html"><span class="navicon">&#128214;</span>Diary</a>
+    <a href="emergency.html"><span class="navicon">&#9742;</span>SOS</a>
+    <a href="profile.html" class="active"><span class="navicon">&#128100;</span>Profile</a>
+  </nav>
+
+  <script src="js/api.js"></script>
+  <script>
+    requireLogin();
+
+    // Populate user profile information
+    function renderProfile() {
+      const user = getUser();
+      if (!user) return;
+
+      const nameEl = document.getElementById("userName");
+      const emailEl = document.getElementById("userEmail");
+      const avatarEl = document.getElementById("userAvatar");
+      const langBadge = document.getElementById("currentLangBadge");
+
+      const name = user.name || "Mithra User";
+      nameEl.textContent = name;
+      emailEl.textContent = user.email || "";
+
+      // Avatar letter
+      const initial = name.trim().charAt(0).toUpperCase() || "U";
+      avatarEl.textContent = initial;
+
+      // Language display
+      const lang = user.language || "English";
+      langBadge.textContent = lang;
+    }
+
+    renderProfile();
+
+    // Also fetch fresh user info from /auth/me in background
+    api("/auth/me")
+      .then((res) => {
+        if (res && res.user) {
+          const user = getUser() || {};
+          Object.assign(user, res.user);
+          localStorage.setItem("mithra_user", JSON.stringify(user));
+          renderProfile();
+        }
+      })
+      .catch(() => {});
+
+    // Add Friend / Coming Soon Modal
+    const addFriendBtn = document.getElementById("addFriendBtn");
+    const comingSoonModal = document.getElementById("comingSoonModal");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+
+    addFriendBtn.onclick = () => {
+      comingSoonModal.classList.remove("hidden");
+    };
+    closeModalBtn.onclick = () => {
+      comingSoonModal.classList.add("hidden");
+    };
+    comingSoonModal.onclick = (e) => {
+      if (e.target === comingSoonModal) comingSoonModal.classList.add("hidden");
+    };
+
+    // Logout functionality moved to Profile
+    document.getElementById("profileLogoutBtn").onclick = () => {
+      logout();
+    };
+  </script>
+</body>
+</html>

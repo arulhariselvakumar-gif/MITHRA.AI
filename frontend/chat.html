@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mithra — Chat</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="chat-page">
+    <header class="chat-topbar">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <img class="mithra-mark" src="assets/logo.png" alt="Mithra logo" style="width:40px;height:40px;margin:0;padding:6px;border-radius:14px;" />
+        <div>
+          <h2 style="font-size:1.1rem; margin:0; line-height:1.2;">Mithra</h2>
+          <p class="sub" style="margin:0; font-size:0.78rem;">Man Ka Mitra AI</p>
+        </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button type="button" class="voice-mode-btn" id="voiceModeBtn" title="Toggle hands-free Voice Mode">
+          <span>🔊</span> <span id="voiceModeLabel">Voice: Off</span>
+        </button>
+        <a href="language.html" id="langBadge" title="Change language" style="text-decoration:none; font-size:0.78rem; font-weight:600; background:rgba(255,255,255,0.12); padding:4px 10px; border-radius:14px; color:#fff; border:1px solid rgba(255,255,255,0.2); white-space:nowrap;">🌐 English</a>
+      </div>
+    </header>
+
+    <!-- Contextual Focus / Mithra Mode Banner -->
+    <div class="focus-banner hidden" id="focusBanner" style="margin: 0 14px 6px;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span class="focus-dot" style="width:8px; height:8px; border-radius:50%; background:#57b8ff; display:inline-block;"></span>
+        <span style="font-weight:700; font-size:0.85rem; color:#57b8ff;">Mithra Mode (Quiet Focus)</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span id="focusTimerText" style="font-weight:700; font-size:1.05rem; color:#fff; font-family:monospace;">25:00</span>
+        <button type="button" id="endFocusBtn" style="background:rgba(255,255,255,0.12); border:1px solid rgba(87,184,255,0.4); color:#fff; border-radius:12px; font-size:0.75rem; padding:3px 8px; cursor:pointer;">End</button>
+      </div>
+    </div>
+
+    <!-- 1. CHAT CONTENT (Zone 1) -->
+    <main class="chat-content chat-scroll" id="chatScroll">
+      <!-- Welcome Hero Area -->
+      <div class="home-hero" id="homeHero">
+        <div class="home-hero-badge">Man Ka Mitra AI</div>
+        <h1 class="home-hero-title">Welcome to Mithra</h1>
+        <p class="home-hero-sub">Your personal companion to talk, focus, and feel understood.</p>
+      </div>
+
+      <!-- Pick My Hobby Section -->
+      <section class="hobby-section" id="hobbySection" aria-label="Pick my hobby">
+        <div class="hobby-header">
+          <h2 class="hobby-heading">Pick my hobby</h2>
+          <p class="hobby-sub">Choose what you enjoy — Mithra can use it to understand you better.</p>
+        </div>
+        <div class="hobby-grid" id="hobbyGrid" role="group" aria-label="Hobby selections">
+          <button type="button" class="hobby-chip" data-hobby="music" aria-pressed="false" aria-label="Listening to music">
+            <span class="hobby-icon">🎵</span>
+            <span class="hobby-label">Listening to music</span>
+          </button>
+          <button type="button" class="hobby-chip" data-hobby="games" aria-pressed="false" aria-label="Playing games">
+            <span class="hobby-icon">🎮</span>
+            <span class="hobby-label">Playing games</span>
+          </button>
+          <button type="button" class="hobby-chip" data-hobby="drawing" aria-pressed="false" aria-label="Drawing">
+            <span class="hobby-icon">🎨</span>
+            <span class="hobby-label">Drawing</span>
+          </button>
+          <button type="button" class="hobby-chip" data-hobby="reading" aria-pressed="false" aria-label="Reading">
+            <span class="hobby-icon">📚</span>
+            <span class="hobby-label">Reading</span>
+          </button>
+          <button type="button" class="hobby-chip" data-hobby="fitness" aria-pressed="false" aria-label="Fitness">
+            <span class="hobby-icon">🏃</span>
+            <span class="hobby-label">Fitness</span>
+          </button>
+          <button type="button" class="hobby-chip" data-hobby="photography" aria-pressed="false" aria-label="Photography">
+            <span class="hobby-icon">📸</span>
+            <span class="hobby-label">Photography</span>
+          </button>
+          <button type="button" class="hobby-chip" data-hobby="other" aria-pressed="false" aria-label="Other">
+            <span class="hobby-icon">➕</span>
+            <span class="hobby-label">Other</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Ask MITHRA / What's on your mind Area -->
+      <div class="ask-mithra-area" id="askMithraArea">
+        <div class="ask-mithra-pill">
+          <span class="ask-icon">💬</span>
+          <span class="ask-text">What's on your mind? — Ask MITHRA</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- 2. COMPOSER (Zone 2) -->
+    <div class="chat-composer chat-composer-wrapper" id="chatComposerWrapper">
+      <!-- Attachment chip if file is selected -->
+      <div class="attachment-chip hidden" id="attachmentChip">
+        <span class="chip-icon">📎</span>
+        <span class="chip-name" id="chipName"></span>
+        <button type="button" class="chip-remove" id="chipRemove" aria-label="Remove attachment">&times;</button>
+      </div>
+
+      <!-- Voice recognition status message -->
+      <div class="voice-status-bar hidden" id="voiceStatusBar">Listening... speak now 🎙️</div>
+
+      <div class="chat-input-row">
+        <!-- Hidden file input -->
+        <input type="file" id="filePicker" accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg" style="display:none;" />
+
+        <!-- Plus Attachment Button -->
+        <button type="button" class="composer-icon-btn plus-btn" id="plusBtn" title="Attach file" aria-label="Attach file">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+
+        <!-- Text Input -->
+        <input id="msgInput" type="text" placeholder="Type your message..." autocomplete="off" />
+
+        <!-- Microphone Voice Button -->
+        <button type="button" class="composer-icon-btn mic-btn" id="micBtn" title="Voice input" aria-label="Voice input">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </button>
+
+        <!-- Send Button -->
+        <button type="button" class="send-btn" id="sendBtn" title="Send message" aria-label="Send">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 3. BOTTOM NAVIGATION (Zone 3) -->
+    <nav class="navbar bottom-nav">
+      <a href="chat.html" class="active"><span class="navicon">&#128172;</span>Home</a>
+      <a href="diary.html"><span class="navicon">&#128214;</span>Diary</a>
+      <a href="emergency.html" id="navSos"><span class="navicon">&#9742;</span>SOS</a>
+      <a href="profile.html"><span class="navicon">&#128100;</span>Profile</a>
+    </nav>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    requireLogin();
+
+    const scroll = document.getElementById("chatScroll");
+    const input = document.getElementById("msgInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const plusBtn = document.getElementById("plusBtn");
+    const filePicker = document.getElementById("filePicker");
+    const attachmentChip = document.getElementById("attachmentChip");
+    const chipName = document.getElementById("chipName");
+    const chipRemove = document.getElementById("chipRemove");
+    const micBtn = document.getElementById("micBtn");
+    const voiceStatusBar = document.getElementById("voiceStatusBar");
+
+    let currentAttachment = null;
+
+    // ---- Language Badge & Sync ----
+    function updateLangBadge(lang) {
+      const badge = document.getElementById("langBadge");
+      if (badge && lang) {
+        badge.textContent = `🌐 ${lang}`;
+      }
+    }
+
+    async function syncUserLanguage() {
+      try {
+        const me = await api("/auth/me");
+        if (me && me.user && me.user.language) {
+          const user = getUser() || {};
+          user.language = me.user.language;
+          localStorage.setItem("mithra_user", JSON.stringify(user));
+          updateLangBadge(me.user.language);
+        }
+      } catch (_) {}
+    }
+
+    // ---- Chat Bubbles ----
+    function addBubble(sender, text) {
+      const div = document.createElement("div");
+      div.className = `bubble ${sender === "mithra" ? "mithra" : "user"}`;
+      div.textContent = text;
+      scroll.appendChild(div);
+      scroll.scrollTop = scroll.scrollHeight;
+    }
+
+    async function loadHistory() {
+      try {
+        const rows = await api("/chat/history");
+        if (rows.length === 0) {
+          const user = getUser();
+          const lang = (user && user.language ? user.language : "English").toLowerCase();
+          let welcomeMsg = "Hey! Main Mithra hoon 🙂 What's on your mind today?";
+          if (lang.includes("hindi")) {
+            welcomeMsg = "नमस्ते! मैं मिथ्रा हूँ 🙂 आज आपके मन में क्या चल रहा है?";
+          } else if (lang.includes("hinglish")) {
+            welcomeMsg = "Hey! Main Mithra hoon 🙂 Aaj kaisa feel kar rahe ho?";
+          } else if (lang.includes("tanglish")) {
+            welcomeMsg = "Hey bro! Na irukken 🙂 What's on your mind today?";
+          } else if (lang.includes("tamil")) {
+            welcomeMsg = "வணக்கம்! நான் மித்ரா 🙂 இன்று நீங்கள் எப்படி உணர்கிறீர்கள்?";
+          }
+          addBubble("mithra", welcomeMsg);
+        }
+        rows.forEach((m) => addBubble(m.sender, m.message));
+      } catch (err) {
+        addBubble("mithra", "Couldn't load our chat history — but I'm here now.");
+      }
+    }
+
+    // ---- Attachment Handling ----
+    plusBtn.addEventListener("click", () => {
+      filePicker.click();
+    });
+
+    filePicker.addEventListener("change", (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        const file = e.target.files[0];
+        currentAttachment = file;
+        chipName.textContent = file.name;
+        attachmentChip.classList.remove("hidden");
+      }
+    });
+
+    chipRemove.addEventListener("click", () => {
+      clearAttachment();
+    });
+
+    function clearAttachment() {
+      currentAttachment = null;
+      filePicker.value = "";
+      chipName.textContent = "";
+      attachmentChip.classList.add("hidden");
+    }
+
+    // ---- Voice Session State Machine & Natural Voice Companion Layer ----
+    const VOICE_STATES = {
+      IDLE: "IDLE",                 // Waiting for input
+      LISTENING: "LISTENING",       // Actively capturing voice
+      THINKING: "THINKING",         // Generating AI response / safety check
+      SPEAKING: "SPEAKING",         // Mithra TTS audio output
+      INTERRUPTED: "INTERRUPTED",   // User spoke or clicked while Mithra was speaking (barge-in)
+      QUIET: "QUIET",               // Silent companion mode
+      FOCUS: "FOCUS",               // Timed study/focus session
+      SAFETY: "SAFETY"              // Deterministic safety guardrail active
+    };
+
+    let voiceSessionState = VOICE_STATES.IDLE;
+    let voiceModeActive = false;
+    let voiceSendTimer = null;
+    let currentUtterance = null;
+
+    const voiceModeBtn = document.getElementById("voiceModeBtn");
+    const voiceModeLabel = document.getElementById("voiceModeLabel");
+
+    function setVoiceState(state) {
+      voiceSessionState = state;
+      if (!voiceModeBtn) return;
+
+      if (state === VOICE_STATES.SPEAKING) {
+        voiceModeBtn.classList.add("speaking");
+        showVoiceStatus("Mithra is speaking 🔊 (Tap mic or speak to interrupt)");
+      } else if (state === VOICE_STATES.THINKING) {
+        voiceModeBtn.classList.remove("speaking");
+        showVoiceStatus("Mithra is listening & thinking... 💭");
+      } else if (state === VOICE_STATES.LISTENING) {
+        voiceModeBtn.classList.remove("speaking");
+        showVoiceStatus("Listening... speak naturally 🎙️");
+      } else if (state === VOICE_STATES.INTERRUPTED) {
+        voiceModeBtn.classList.remove("speaking");
+        showVoiceStatus("Interrupted ⚡ Listening to you now 🎙️");
+      } else if (state === VOICE_STATES.SAFETY) {
+        voiceModeBtn.classList.remove("speaking");
+        showVoiceStatus("🛡️ Mithra Safety Support Active");
+      } else if (state === VOICE_STATES.FOCUS) {
+        voiceModeBtn.classList.remove("speaking");
+        showVoiceStatus("⏱️ Focus Mode Active — Mithra is quiet");
+      } else {
+        voiceModeBtn.classList.remove("speaking");
+        if (!voiceModeActive) hideVoiceStatus();
+      }
+    }
+
+    function stopSpeaking() {
+      if (window.speechSynthesis && window.speechSynthesis.speaking) {
+        try { window.speechSynthesis.cancel(); } catch (_) {}
+      }
+      currentUtterance = null;
+    }
+
+    // ---- Deterministic Language Detector & Language-Aware Voice Selection ----
+    const TANGLISH_KEYWORDS_SET = new Set([
+      "enakku", "enaku", "unaku", "unakku", "ungalukku", "ungaluku", "romba", "irukku", "iruku",
+      "irukken", "irukom", "irundha", "irundhal", "enna", "ennachu", "aachu", "aachi", "sollu",
+      "sollunga", "sollren", "venum", "venda", "vendam", "mudiyala", "mudiyadhu", "mudiyum",
+      "theriyala", "therila", "theriyum", "theriyuma", "pannunga", "pannu", "pannitu", "panreenga",
+      "pochu", "poren", "pooren", "varen", "vaanga", "pesanum", "pesalaam", "pesa",
+      "kekkuren", "kekalaam", "kekka", "manasu", "kashtama", "kashtam", "kavala",
+      "bayama", "santhosham", "machan", "machi", "thala", "da", "paa", "illa", "illai",
+      "illana", "podhum", "puriyudhu", "puriyala", "aagudhu", "aagura", "maari", "mari",
+      "kooda", "kitta", "kittayum", "yaar", "azhugai", "valikudhu", "konjam", "nalla", "seri",
+      "thookam", "udambu", "paravala", "paathu", "vittutu", "semma", "mokka", "bro", "bore",
+      "innaiki", "innaki"
+    ]);
+
+    const HINGLISH_KEYWORDS_SET = new Set([
+      "mujhe", "mera", "meri", "mere", "tum", "tumhara", "tumhari", "tumhare",
+      "aap", "aapka", "aapke", "aapki", "hum", "humara", "kya", "hai", "hain",
+      "ho", "hoon", "raha", "rahi", "rahe", "karna", "karo", "karein", "karun",
+      "bahut", "bohot", "nahi", "nahin", "accha", "acha", "kaisi", "kaise", "kaisa", "kyun",
+      "pareshan", "chinta", "sath", "dost", "bhai", "samajh", "kuch", "kisi", "zindagi", "mann",
+      "chahiye", "pata", "yaar", "bro", "tension"
+    ]);
+
+    const ENGLISH_COMMON_WORDS = new Set([
+      "i", "me", "my", "myself", "we", "our", "you", "your", "he", "him", "his", "she", "her",
+      "they", "them", "their", "it", "its", "what", "which", "who", "whom", "this", "that",
+      "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had",
+      "having", "do", "does", "did", "doing", "can", "could", "will", "would", "shall", "should",
+      "may", "might", "must", "today", "yesterday", "tomorrow", "now", "feeling", "feel",
+      "stressed", "happy", "sad", "angry", "tired", "very", "really", "so", "too", "much",
+      "help", "please", "talk", "with", "about", "because", "and", "but", "or", "not", "the",
+      "a", "an", "to", "for", "in", "on", "at", "by", "from", "up", "down", "over", "under", "meeting"
+    ]);
+
+    function detectMessageLanguage(text, userSelectedLanguage = null) {
+      if (!text || !text.trim()) {
+        return userSelectedLanguage ? userSelectedLanguage : "English";
+      }
+
+      // 1. Script checks
+      if (/[\u0B80-\u0BFF]/.test(text)) return "Tamil";
+      if (/[\u0900-\u097F]/.test(text)) return "Hindi";
+      if (/[\u0C00-\u0C7F]/.test(text)) return "Telugu";
+
+      const lower = text.toLowerCase();
+      const words = lower.match(/[a-zA-Z]+/g) || [];
+      const wordsSet = new Set(words);
+
+      // 2. Tanglish scoring
+      let tanglishScore = 0;
+      for (const w of wordsSet) {
+        if (TANGLISH_KEYWORDS_SET.has(w)) tanglishScore += 2;
+        if (w.length > 5 && (w.endsWith("mudiyala") || w.endsWith("sollunga") || w.endsWith("pannunga") || w.endsWith("aagudhu"))) {
+          tanglishScore += 2;
+        }
+      }
+      if (/\b(stress|tired|heavy|sad|tension|bore|lonely|empty|upset|mokka)\s+(ah|a|day)\b/.test(lower)) {
+        tanglishScore += 3;
+      }
+      if (/\b(semma\s+mokka|feel\s+aagudhu|feel\s+aagura|irukku\s+pola|irukken\s+bro|enna\s+aachu|pesa\s+mudiyala|kooda\s+irukken|kavala\s+padatheenga|yaar\s+kittayum|thookam\s+varala)\b/.test(lower)) {
+        tanglishScore += 3;
+      }
+
+      // 3. Hinglish scoring
+      let hinglishScore = 0;
+      for (const w of wordsSet) {
+        if (HINGLISH_KEYWORDS_SET.has(w)) hinglishScore += 2;
+      }
+      if (/\b(ho\s+raha|ho\s+rahi|kar\s+raha|nahi\s+hai|mat\s+lo|kuch\s+nahi|mann\s+nahi|lag\s+raha|baat\s+karo|kya\s+hua|kya\s+chal\s+raha)\b/.test(lower)) {
+        hinglishScore += 3;
+      }
+
+      // 4. English scoring
+      let englishScore = 0;
+      for (const w of wordsSet) {
+        if (ENGLISH_COMMON_WORDS.has(w)) englishScore += 1;
+      }
+
+      // Multi-signal evaluation
+      if (tanglishScore >= 3 && tanglishScore > hinglishScore) {
+        return "Tanglish";
+      }
+      if (hinglishScore >= 3 && hinglishScore > tanglishScore) {
+        return "Hinglish";
+      }
+
+      if (englishScore >= 2 && tanglishScore === 0 && hinglishScore === 0) {
+        return "English";
+      }
+
+      if (userSelectedLanguage) {
+        const norm = (userSelectedLanguage || "").trim();
+        if (["Tanglish", "Hinglish", "Tamil", "Hindi", "Telugu"].includes(norm)) {
+          return norm;
+        }
+      }
+
+      return "English";
+    }
+
+    function selectTtsVoice(utterance, language = "English") {
+      if (!window.speechSynthesis) return;
+      const voices = window.speechSynthesis.getVoices() || [];
+      const norm = (language || "English").toLowerCase();
+
+      if (norm.includes("tanglish") || norm.includes("hinglish")) {
+        // Tanglish & Hinglish are Latin-script. Use an Indian English voice if available
+        utterance.lang = "en-IN";
+        const enInVoice = voices.find(v => v.lang === "en-IN" || v.lang === "en_IN" || (v.name && v.name.toLowerCase().includes("india")));
+        const fallbackEnVoice = voices.find(v => v.lang && v.lang.startsWith("en"));
+        if (enInVoice) utterance.voice = enInVoice;
+        else if (fallbackEnVoice) utterance.voice = fallbackEnVoice;
+      } else if (norm.includes("tamil")) {
+        utterance.lang = "ta-IN";
+        const taVoice = voices.find(v => v.lang === "ta-IN" || v.lang === "ta_IN" || (v.lang && v.lang.startsWith("ta")));
+        if (taVoice) utterance.voice = taVoice;
+      } else if (norm.includes("hindi")) {
+        utterance.lang = "hi-IN";
+        const hiVoice = voices.find(v => v.lang === "hi-IN" || v.lang === "hi_IN" || (v.lang && v.lang.startsWith("hi")));
+        if (hiVoice) utterance.voice = hiVoice;
+      } else if (norm.includes("telugu")) {
+        utterance.lang = "te-IN";
+        const teVoice = voices.find(v => v.lang === "te-IN" || v.lang === "te_IN" || (v.lang && v.lang.startsWith("te")));
+        if (teVoice) utterance.voice = teVoice;
+      } else {
+        // English: prefer en-IN / en-US
+        utterance.lang = "en-IN";
+        const enVoice = voices.find(v => v.lang === "en-IN" || v.lang === "en_IN" || (v.name && v.name.toLowerCase().includes("india"))) ||
+                        voices.find(v => v.lang && v.lang.startsWith("en"));
+        if (enVoice) utterance.voice = enVoice;
+      }
+    }
+
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        try { window.speechSynthesis.getVoices(); } catch (_) {}
+      };
+    }
+
+    function speakMithraResponse(speechText, language = "English") {
+      if (!window.speechSynthesis || !speechText) return;
+
+      stopSpeaking();
+
+      const utterance = new SpeechSynthesisUtterance(speechText);
+      currentUtterance = utterance;
+
+      selectTtsVoice(utterance, language);
+
+      utterance.rate = 1.0;
+      utterance.pitch = 1.04;
+
+      utterance.onstart = () => {
+        setVoiceState(VOICE_STATES.SPEAKING);
+      };
+
+      utterance.onend = () => {
+        currentUtterance = null;
+        if (voiceSessionState === VOICE_STATES.SPEAKING) {
+          setVoiceState(voiceModeActive ? VOICE_STATES.LISTENING : VOICE_STATES.IDLE);
+          if (voiceModeActive && recognition && !isListening) {
+            try {
+              recognition.lang = getSpeechLang();
+              recognition.start();
+            } catch (_) {}
+          }
+        }
+      };
+
+      utterance.onerror = () => {
+        currentUtterance = null;
+        setVoiceState(VOICE_STATES.IDLE);
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    if (voiceModeBtn) {
+      voiceModeBtn.addEventListener("click", () => {
+        voiceModeActive = !voiceModeActive;
+        if (voiceModeActive) {
+          voiceModeBtn.classList.add("active");
+          voiceModeLabel.textContent = "Voice: On";
+          showVoiceStatus("Voice Mode ON 🎙️ Speak naturally. Mithra will talk back.");
+          setTimeout(() => {
+            if (voiceModeActive && !isListening && recognition) {
+              try {
+                recognition.lang = getSpeechLang();
+                recognition.start();
+              } catch (_) {}
+            }
+          }, 500);
+        } else {
+          voiceModeBtn.classList.remove("active");
+          voiceModeBtn.classList.remove("speaking");
+          voiceModeLabel.textContent = "Voice: Off";
+          stopSpeaking();
+          if (isListening && recognition) {
+            try { recognition.stop(); } catch (_) {}
+          }
+          setVoiceState(VOICE_STATES.IDLE);
+          showVoiceStatus("Voice Mode Off (Standard push-to-talk mic active)");
+          setTimeout(hideVoiceStatus, 2500);
+        }
+      });
+    }
+
+    // ---- Speech Recognition (Microphone) & Interruption (Barge-in) ----
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    let isListening = false;
+
+    function showVoiceStatus(msg) {
+      if (voiceStatusBar) {
+        voiceStatusBar.textContent = msg;
+        voiceStatusBar.classList.remove("hidden");
+      }
+    }
+
+    function hideVoiceStatus() {
+      if (voiceStatusBar) {
+        voiceStatusBar.classList.add("hidden");
+      }
+    }
+
+    function getSpeechLang() {
+      const user = getUser();
+      const l = (user && user.language ? user.language : "English").toLowerCase();
+      // ta-IN when user explicitly selects Tamil or when Tamil-script recognition is needed
+      if (l === "tamil" || l === "தமிழ்") return "ta-IN";
+      if (l === "hindi" || l === "हिंदी") return "hi-IN";
+      if (l === "telugu" || l === "తెలుగు") return "te-IN";
+      // Prefer en-IN for Latin-script mixed speech (Tanglish, Hinglish, English)
+      return "en-IN";
+    }
+
+    function setupSpeechRecognition() {
+      if (!SpeechRecognition) {
+        micBtn.addEventListener("click", () => {
+          showVoiceStatus("Speech recognition is not supported in this browser. Please type your message.");
+          setTimeout(hideVoiceStatus, 3500);
+        });
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+
+      recognition.onstart = () => {
+        isListening = true;
+        micBtn.classList.add("recording");
+        setVoiceState(VOICE_STATES.LISTENING);
+      };
+
+      recognition.onresult = (event) => {
+        // Interruption / Barge-in: if Mithra was speaking, interrupt immediately!
+        if (window.speechSynthesis && window.speechSynthesis.speaking) {
+          stopSpeaking();
+          setVoiceState(VOICE_STATES.INTERRUPTED);
+        }
+
+        let transcript = "";
+        let isFinal = false;
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          transcript += event.results[i][0].transcript;
+          if (event.results[i].isFinal) isFinal = true;
+        }
+
+        if (transcript) {
+          input.value = transcript;
+          // In hands-free Voice Mode, auto-send after a conversational pause
+          if (voiceModeActive && isFinal && transcript.trim().length > 1) {
+            clearTimeout(voiceSendTimer);
+            voiceSendTimer = setTimeout(() => {
+              if (voiceModeActive && input.value.trim()) {
+                sendMessage();
+              }
+            }, 650);
+          }
+        }
+      };
+
+      recognition.onerror = (event) => {
+        isListening = false;
+        micBtn.classList.remove("recording");
+        if (event.error !== "no-speech") {
+          showVoiceStatus(`Voice note: ${event.error || "recognition paused"}`);
+          setTimeout(hideVoiceStatus, 2500);
+        }
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+        micBtn.classList.remove("recording");
+        if (!voiceModeActive) {
+          hideVoiceStatus();
+        }
+      };
+
+      // Mic button: Push-to-talk or manual trigger
+      micBtn.addEventListener("click", () => {
+        // Barge-in: interrupt speech if Mithra was speaking
+        if (window.speechSynthesis && window.speechSynthesis.speaking) {
+          stopSpeaking();
+          setVoiceState(VOICE_STATES.INTERRUPTED);
+        }
+
+        if (isListening) {
+          recognition.stop();
+        } else {
+          try {
+            recognition.lang = getSpeechLang();
+            recognition.start();
+          } catch (e) {
+            try { recognition.stop(); } catch (_) {}
+          }
+        }
+      });
+
+      // User typing also interrupts spoken response gracefully
+      input.addEventListener("input", () => {
+        if (window.speechSynthesis && window.speechSynthesis.speaking) {
+          stopSpeaking();
+          setVoiceState(VOICE_STATES.INTERRUPTED);
+        }
+      });
+    }
+
+    // ---- Send Message (Exact Same Working AI Backend Pipeline) ----
+    async function sendMessage() {
+      const text = input.value.trim();
+      const attached = currentAttachment;
+
+      if (!text && !attached) return;
+
+      input.value = "";
+      clearAttachment();
+
+      // Barge-in: cancel any speaking audio
+      stopSpeaking();
+      setVoiceState(VOICE_STATES.THINKING);
+
+      // Display bubble with attachment note if file was attached
+      let displayMessage = text;
+      if (attached) {
+        displayMessage = (text ? text + "\n" : "") + `📎 [Attached: ${attached.name}]`;
+      }
+      addBubble("user", displayMessage);
+
+      // Typing indicator
+      const typingDiv = document.createElement("div");
+      typingDiv.className = "bubble mithra";
+      typingDiv.style.opacity = "0.7";
+      typingDiv.textContent = "Mithra is typing... 💭";
+      scroll.appendChild(typingDiv);
+      scroll.scrollTop = scroll.scrollHeight;
+
+      try {
+        const user = getUser();
+        const userSelectedLang = user && user.language ? user.language : "English";
+        const messageToSend = text || `I have attached ${attached.name}`;
+        const effectiveLang = detectMessageLanguage(messageToSend, userSelectedLang);
+
+        const res = await api("/chat/message", {
+          method: "POST",
+          body: { message: messageToSend, language: effectiveLang }
+        });
+
+        if (typingDiv.parentNode) typingDiv.parentNode.removeChild(typingDiv);
+        addBubble("mithra", res.reply);
+
+        const voiceLang = res.language || effectiveLang;
+
+        if (res.crisis && res.crisis.safety_mode) {
+          setVoiceState(VOICE_STATES.SAFETY);
+          showSafetyCard();
+          if (voiceModeActive) {
+            speakMithraResponse(res.speechText || res.reply, voiceLang);
+          }
+        } else if (res.focusState && res.focusState.active) {
+          setVoiceState(VOICE_STATES.FOCUS);
+          startFocusTimer(res.focusState.durationMinutes, res.focusState.sessionId);
+          if (voiceModeActive) {
+            speakMithraResponse(res.speechText || res.reply, voiceLang);
+          }
+        } else {
+          if (res.autoLoggedToDiary) {
+            addBubble("mithra", "💜 I've quietly saved a note of this moment in your diary, in case you want to look back on it later.");
+          }
+          if (voiceModeActive) {
+            speakMithraResponse(res.speechText || res.reply, voiceLang);
+          } else {
+            setVoiceState(VOICE_STATES.IDLE);
+          }
+        }
+      } catch (err) {
+        if (typingDiv.parentNode) typingDiv.parentNode.removeChild(typingDiv);
+        addBubble("mithra", "Sorry, I couldn't respond just now — try again in a moment.");
+        setVoiceState(VOICE_STATES.IDLE);
+      }
+    }
+
+    // ---- Calm Immediate SOS / Safety Mode UI ----
+    function showSafetyCard() {
+      // Highlight SOS in bottom navbar gently
+      const navSos = document.getElementById("navSos");
+      if (navSos) {
+        navSos.classList.add("sos-alert");
+      }
+
+      // Calm, non-judgmental Safety Card
+      const card = document.createElement("div");
+      card.className = "safety-card";
+      card.innerHTML = `
+        <div class="safety-card-header">
+          <span class="safety-card-icon">🛡️</span>
+          <div>
+            <div class="safety-card-title">Mithra Safety Support</div>
+            <div class="safety-card-sub">Immediate free & confidential help is available right now.</div>
+          </div>
+        </div>
+        <div class="safety-actions">
+          <a href="tel:14416" class="safety-btn safety-btn-telemanas">
+            <span>📞</span>
+            <div>
+              <span class="btn-text-main">Call Tele-MANAS (14416)</span>
+              <span class="btn-text-sub">24/7 National Mental Health Helpline • Free</span>
+            </div>
+          </a>
+          <a href="tel:112" class="safety-btn safety-btn-emergency">
+            <span>🚨</span>
+            <div>
+              <span class="btn-text-main">National Emergency (112)</span>
+              <span class="btn-text-sub">Immediate emergency assistance</span>
+            </div>
+          </a>
+          <a href="emergency.html" class="safety-btn safety-btn-sos">
+            <span>💙</span>
+            <div>
+              <span class="btn-text-main">Open SOS Emergency Contacts</span>
+              <span class="btn-text-sub">Reach trusted family & friends saved in Mithra</span>
+            </div>
+          </a>
+        </div>
+      `;
+      scroll.appendChild(card);
+      scroll.scrollTop = scroll.scrollHeight;
+    }
+
+    // ---- Contextual Focus / Mithra Mode Timer State ----
+    let focusIntervalId = null;
+    let currentFocusSessionId = null;
+    let appState = "AVAILABLE"; // Transitions between AVAILABLE and FOCUS_QUIET
+
+    function startFocusTimer(durationMinutes, sessionId) {
+      appState = "FOCUS_QUIET";
+      currentFocusSessionId = sessionId;
+      let remainingSeconds = (durationMinutes || 25) * 60;
+      const banner = document.getElementById("focusBanner");
+      const timerText = document.getElementById("focusTimerText");
+
+      if (focusIntervalId) clearInterval(focusIntervalId);
+
+      banner.classList.remove("hidden");
+
+      function updateDisplay() {
+        const mins = Math.floor(remainingSeconds / 60);
+        const secs = remainingSeconds % 60;
+        timerText.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+      updateDisplay();
+
+      focusIntervalId = setInterval(() => {
+        remainingSeconds--;
+        if (remainingSeconds <= 0) {
+          clearInterval(focusIntervalId);
+          endFocusSession(true);
+        } else {
+          updateDisplay();
+        }
+      }, 1000);
+    }
+
+    async function endFocusSession(completed = false) {
+      if (focusIntervalId) {
+        clearInterval(focusIntervalId);
+        focusIntervalId = null;
+      }
+      appState = "AVAILABLE";
+      const banner = document.getElementById("focusBanner");
+      if (banner) banner.classList.add("hidden");
+
+      if (currentFocusSessionId) {
+        try {
+          await api("/focus/session", {
+            method: "POST",
+            body: { durationSeconds: 25 * 60, completed }
+          });
+        } catch (_) {}
+        currentFocusSessionId = null;
+      }
+
+      if (completed) {
+        addBubble("mithra", "Great focus session! 👏 Your study timer has finished. I'm available whenever you need me.");
+      }
+    }
+
+    document.getElementById("endFocusBtn").onclick = () => endFocusSession(false);
+
+    sendBtn.addEventListener("click", sendMessage);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    // ---- Pick My Hobby State & Persistence ----
+    function initHobbies() {
+      let selectedHobbies = [];
+      try {
+        const raw = localStorage.getItem("mithra_hobbies");
+        if (raw) selectedHobbies = JSON.parse(raw);
+        if (!Array.isArray(selectedHobbies)) selectedHobbies = [];
+      } catch (_) {
+        selectedHobbies = [];
+      }
+
+      const chips = document.querySelectorAll(".hobby-chip");
+      chips.forEach((chip) => {
+        const hobbyKey = chip.getAttribute("data-hobby");
+        const isSelected = selectedHobbies.includes(hobbyKey);
+        chip.classList.toggle("selected", isSelected);
+        chip.setAttribute("aria-pressed", isSelected ? "true" : "false");
+        chip.setAttribute("aria-selected", isSelected ? "true" : "false");
+
+        chip.onclick = () => {
+          const currentlySelected = chip.classList.contains("selected");
+          const nextState = !currentlySelected;
+          chip.classList.toggle("selected", nextState);
+          chip.setAttribute("aria-pressed", nextState ? "true" : "false");
+          chip.setAttribute("aria-selected", nextState ? "true" : "false");
+
+          const activeList = Array.from(document.querySelectorAll(".hobby-chip.selected"))
+            .map((el) => el.getAttribute("data-hobby"));
+
+          try {
+            localStorage.setItem("mithra_hobbies", JSON.stringify(activeList));
+          } catch (_) {}
+        };
+      });
+    }
+
+    // Initialize
+    const curUser = getUser();
+    updateLangBadge(curUser && curUser.language ? curUser.language : "English");
+    syncUserLanguage();
+    setupSpeechRecognition();
+    initHobbies();
+    loadHistory().then(() => {
+      // Keep Home screen Hero & Pick my hobby visible on page open
+      scroll.scrollTop = 0;
+    });
+  </script>
+</body>
+</html>

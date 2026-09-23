@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+package-lock.json.bak
+
+# Python virtual environment & cache
+.venv/
+venv/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# Local databases & uploads
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+backend/mithra.db
+backend/mithra.db-shm
+backend/mithra.db-wal
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Environment variables & secrets
+.env
+.env.local
+backend/.env
+backend/ai_service/.env
+
+# Large model binaries
+*.gguf
+*.bin
+*.pt
+*.safetensors
+models/
+
+# Logs & temp files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.tempmediaStorage/
+scratch/
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

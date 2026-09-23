@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mithra — Emergency</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="screen">
+    <img class="mithra-mark" src="assets/logo.png" alt="Mithra logo" />
+    <h2 style="text-align:center; margin-top:14px;">Calling / Emergency</h2>
+    <p class="sub" style="text-align:center;">People Mithra can reach out to on your behalf when you need them.</p>
+
+    <div id="contacts"></div>
+
+    <button class="btn btn-outline" id="addBtn" style="margin-top: 10px;">+ Add emergency contact</button>
+
+    <div id="addForm" class="hidden" style="margin-top:16px;">
+      <div class="field"><label>Name</label><input id="cName" type="text" placeholder="e.g. Mom" /></div>
+      <div class="field"><label>Phone</label><input id="cPhone" type="tel" placeholder="+91 90000 00000" /></div>
+      <button class="btn btn-primary" id="saveContact">Save contact</button>
+    </div>
+
+    <div class="error" id="err"></div>
+
+    <a class="btn btn-danger" href="tel:112" style="margin-top: 30px;">&#9742; Call national helpline (112)</a>
+  </div>
+
+  <nav class="navbar">
+    <a href="chat.html"><span class="navicon">&#128172;</span>Home</a>
+    <a href="diary.html"><span class="navicon">&#128214;</span>Diary</a>
+    <a href="emergency.html" class="active"><span class="navicon">&#9742;</span>SOS</a>
+    <a href="profile.html"><span class="navicon">&#128100;</span>Profile</a>
+  </nav>
+
+  <script src="js/api.js"></script>
+  <script>
+    requireLogin();
+    const errEl = document.getElementById("err");
+
+    document.getElementById("addBtn").onclick = () => document.getElementById("addForm").classList.toggle("hidden");
+
+    document.getElementById("saveContact").onclick = async () => {
+      const name = document.getElementById("cName").value.trim();
+      const phone = document.getElementById("cPhone").value.trim();
+      if (!name || !phone) return;
+      try {
+        await api("/emergency/contacts", { method: "POST", body: { name, phone } });
+        document.getElementById("cName").value = "";
+        document.getElementById("cPhone").value = "";
+        document.getElementById("addForm").classList.add("hidden");
+        loadContacts();
+      } catch (err) { errEl.textContent = err.message; }
+    };
+
+    async function loadContacts() {
+      const list = document.getElementById("contacts");
+      try {
+        const rows = await api("/emergency/contacts");
+        if (rows.length === 0) { list.innerHTML = '<p class="sub">No contacts added yet.</p>'; return; }
+        list.innerHTML = "";
+        rows.forEach((c) => {
+          const div = document.createElement("div");
+          div.className = "contact-row";
+          div.innerHTML = `<div class="who">${c.name}<small>${c.phone}</small></div>
+            <a class="call-btn" href="tel:${c.phone}">&#9742;</a>`;
+          list.appendChild(div);
+        });
+      } catch (err) { errEl.textContent = err.message; }
+    }
+
+    loadContacts();
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# Core FastAPI dependencies
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+pydantic>=2.6.0
+python-dotenv>=1.0.1
+httpx>=0.27.0
+
+# Dependencies for running Qwen3-4B locally via Hugging Face Transformers.
+# If running in DEMO/FALLBACK mode, these are not strictly required.
+# To run the live model, install:
+# torch>=2.2.0
+# transformers>=4.40.0
+# accelerate>=0.29.0

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reset password — Mithra</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="screen">
+    <h2>Reset password</h2>
+    <p class="sub">Choose a new password for your account.</p>
+
+    <form id="resetForm">
+      <div class="field">
+        <label for="newpwd">New pwd:</label>
+        <div class="pw-wrap">
+          <input id="newpwd" type="password" required minlength="6" />
+          <button type="button" id="toggle1">show</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="confirmpwd">Confirm pwd:</label>
+        <div class="pw-wrap">
+          <input id="confirmpwd" type="password" required minlength="6" />
+          <button type="button" id="toggle2">show</button>
+        </div>
+      </div>
+
+      <div class="error" id="err"></div>
+      <div class="notice" id="notice"></div>
+      <button class="btn btn-primary" type="submit" id="submitBtn">Reset</button>
+    </form>
+
+    <img class="mithra-mark" src="assets/logo.png" alt="Mithra logo" style="margin-top: 40px;" />
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+
+    document.getElementById("toggle1").onclick = () => {
+      const el = document.getElementById("newpwd");
+      el.type = el.type === "password" ? "text" : "password";
+    };
+    document.getElementById("toggle2").onclick = () => {
+      const el = document.getElementById("confirmpwd");
+      el.type = el.type === "password" ? "text" : "password";
+    };
+
+    document.getElementById("resetForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById("err");
+      const notice = document.getElementById("notice");
+      const btn = document.getElementById("submitBtn");
+      errEl.textContent = ""; notice.textContent = "";
+
+      const p1 = document.getElementById("newpwd").value;
+      const p2 = document.getElementById("confirmpwd").value;
+      if (p1 !== p2) { errEl.textContent = "Passwords don't match"; return; }
+      if (!token) { errEl.textContent = "Missing or invalid reset link"; return; }
+
+      btn.disabled = true; btn.textContent = "Resetting...";
+      try {
+        await api("/auth/reset-password", { method: "POST", body: { token, newPassword: p1 } });
+        notice.textContent = "Password updated! Redirecting to login...";
+        setTimeout(() => (location.href = "login.html"), 1200);
+      } catch (err) {
+        errEl.textContent = err.message;
+      } finally {
+        btn.disabled = false; btn.textContent = "Reset";
+      }
+    });
+  </script>
+</body>
+</html>

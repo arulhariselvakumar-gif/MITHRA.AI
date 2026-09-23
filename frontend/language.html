@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Choose language — Mithra</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="screen">
+    <img class="mithra-mark" src="assets/logo.png" alt="Mithra logo" />
+    <h2 style="text-align:center; margin-top:14px;">Choose Language</h2>
+    <p class="sub" style="text-align:center;">Mithra will chat with you in this language.</p>
+
+    <div class="lang-grid" id="langGrid">
+      <button class="lang-tile" id="tile-english" data-lang="English">English</button>
+      <button class="lang-tile" id="tile-tamil" data-lang="Tamil">Tamil (தமிழ்)</button>
+      <button class="lang-tile" id="tile-tanglish" data-lang="Tanglish">Tanglish</button>
+      <button class="lang-tile" id="tile-hindi" data-lang="Hindi">Hindi (हिंदी)</button>
+      <button class="lang-tile" id="tile-hinglish" data-lang="Hinglish">Hinglish</button>
+      <button class="lang-tile" id="tile-telugu" data-lang="Telugu">Telugu (తెలుగు)</button>
+      <button class="lang-tile" id="tile-russian" data-lang="Русский">Russian</button>
+      <button class="lang-tile" id="tile-other" data-lang="Other">Other</button>
+    </div>
+
+    <div class="error" id="err"></div>
+    <button class="btn btn-primary" id="continueBtn" style="margin-top: 30px;" disabled>Continue</button>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    requireLogin();
+    let selected = null;
+    const tiles = document.querySelectorAll(".lang-tile");
+
+    // Pre-select current language if available in session
+    const currentUser = getUser();
+    if (currentUser && currentUser.language) {
+      tiles.forEach((t) => {
+        const langVal = t.dataset.lang.toLowerCase();
+        const userVal = String(currentUser.language).toLowerCase();
+        if (langVal === userVal ||
+            (langVal === "hindi" && currentUser.language === "हिंदी") ||
+            (langVal === "tamil" && currentUser.language === "தமிழ்") ||
+            (langVal === "telugu" && currentUser.language === "తెలుగు")) {
+          t.classList.add("selected");
+          selected = t.dataset.lang;
+          document.getElementById("continueBtn").disabled = false;
+        }
+      });
+    }
+
+    tiles.forEach((t) => t.addEventListener("click", () => {
+      tiles.forEach((x) => x.classList.remove("selected"));
+      t.classList.add("selected");
+      selected = t.dataset.lang;
+      document.getElementById("continueBtn").disabled = false;
+    }));
+
+    document.getElementById("continueBtn").addEventListener("click", async () => {
+      const errEl = document.getElementById("err");
+      try {
+        const res = await api("/auth/language", { method: "POST", body: { language: selected } });
+        const user = getUser() || {};
+        user.language = (res && res.language) ? res.language : selected;
+        localStorage.setItem("mithra_user", JSON.stringify(user));
+        location.href = "chat.html";
+      } catch (err) {
+        errEl.textContent = err.message;
+      }
+    });
+  </script>
+</body>
+</html>

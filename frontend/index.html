@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mithra — Man Ka Mitra AI</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="screen" style="justify-content: center; align-items: center; text-align: center;">
+    <img class="mithra-mark" src="assets/logo.png" alt="Mithra logo" style="width:88px;height:88px;" />
+    <h1 style="font-size: 1.8rem; margin-top: 18px;">MITHRA</h1>
+    <p class="sub">Man Ka Mitra AI — your AI dost, always listening.</p>
+
+    <div class="stack" style="width: 100%; max-width: 280px; margin-top: 40px;">
+      <button class="btn btn-primary" onclick="location.href='signup.html'">Sign up</button>
+      <button class="btn btn-outline" onclick="location.href='login.html'">Login</button>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    // If already logged in, skip straight past the landing screen.
+    if (getToken()) location.href = "chat.html";
+  </script>
+</body>
+</html>
