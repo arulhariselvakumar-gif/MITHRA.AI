@@ -26,6 +26,49 @@ function ruleBasedReply(message, language = "English") {
   const t = (message || "").toLowerCase();
   const lang = (language || "English").toLowerCase();
 
+  // 1. Physical chest pain symptom check (Emergency medical safety)
+  if (/\b(nenju\s+vali|nenjula\s+vali|chest\s+pain|pada\s+pada|nenju\s+valikudhu)\b/.test(t)) {
+    if (lang.includes("tanglish")) {
+      return "Aiyo bro, unakku nenju valikudha? Please idhuku risk edukaadheenga. Modhalla amaidhiya ukkarunga. Valikudhu na udane doctor or 112 emergency ku call pannunga, illa family kitta sollunga. Naan un kooda irukken, aana please medical help mukkiyam bro.";
+    }
+    return "Bro, are you feeling chest pain? Please sit down, rest, and do not ignore physical pain. If it persists or feels severe, please call emergency services (112) or reach out to a doctor right away.";
+  }
+
+  // 2. Focus mode deactivation
+  if (/\b(focus|study|padhai)\b/.test(t) && /\b(off|stop|end|cancel|exit|mudikalam|mudichiko|mudichidu|vendam|venda|band)\b/.test(t)) {
+    if (lang.includes("tanglish")) {
+      return "Sure bro, Focus Mode off panniten. Epdi irundhudhu unga focus session? Edhavadhu pesalaama?";
+    }
+    if (lang.includes("hinglish")) {
+      return "Sure dost, Focus Mode off kar diya. Kaisa raha aapka session? Ab kuch baat karni hai?";
+    }
+    return "Sure, Focus Mode is now turned off. How was your session? Let me know if you need anything else.";
+  }
+
+  // 3. Companion confirmation query ("nee en kooda iruppiya?")
+  if (/\b(nee|neenga)\s+(en|ennoda|engooda|en\s+kooda)\s+(iruppiya|irupeengala|irupiya|iruppa)\b/.test(t) || /\b(will\s+you\s+be\s+with\s+me)\b/.test(t)) {
+    if (lang.includes("tanglish")) {
+      return "Of course bro, naan un kooda irukken! Eppovum un kooda thaan iruppen, unakku thonuradha eppo venaalum enkitta sollalaam.";
+    }
+    if (lang.includes("hinglish")) {
+      return "Of course dost, main hamesha aapke sath hoon! Jab bhi baat karni ho, main yahin hoon.";
+    }
+    return "Of course bro, I am right here with you! You are never alone.";
+  }
+
+  // 4. Specific Tanglish perspective responses
+  if (lang.includes("tanglish")) {
+    if (/\b(stress)\b/.test(t)) {
+      return "Unakku romba stress ah irukku pola bro. Enna aachu? Sollu, naan kekkuren.";
+    }
+    if (/\b(tired)\b/.test(t)) {
+      return "Nee romba tired ah irukka pola. Konjam rest eduthuko bro.";
+    }
+    if (/\b(family)\b/.test(t)) {
+      return "Unnoda family la problem aacha bro? Sollu, enna nadandhudhu?";
+    }
+  }
+
   if (isNegativeSentiment(t)) {
     if (lang.includes("hindi")) {
       return "नमस्ते दोस्त 💙 मैं समझ सकता हूँ कि आज का दिन काफी तनावपूर्ण रहा है। आप अकेले नहीं हैं — क्या आप अपनी बात साझा करना चाहेंगे? मैंने इसे आपकी डायरी में भी सुरक्षित कर दिया है।";
@@ -34,7 +77,7 @@ function ruleBasedReply(message, language = "English") {
       return "Hey dost 💙 Main samajh sakta hoon ki cheezein abhi thodi heavy lag rahi hain. Aap akele nahi ho — agar baat karni ho toh main yahin hoon. Maine iska ek note aapki diary me save kar diya hai.";
     }
     if (lang.includes("tanglish")) {
-      return "Puriyudhu bro 💙 Romba stress ah irukku pola. Neenga thaniya illa, naan unga kooda irukken. Enna aachu nu sollunga, pesalaam. Idhoda note-ah unga diary-la naan save panniten.";
+      return "Unakku romba heavy ah irukku pola bro. Neenga thaniya illa, naan unga kooda irukken. Enna aachu nu sollunga, pesalaam. Idhoda note-ah unga diary-la naan save panniten.";
     }
     if (lang.includes("tamil")) {
       return "நண்பா 💙 உங்கள் மன பாரத்தை என்னால் புரிந்து கொள்ள முடிகிறது. நீங்கள் தனியாக இல்லை — என்னிடம் பகிர்ந்து கொள்ளுங்கள். இதை உங்கள் நாட்குறிப்பில் குறித்து வைத்துள்ளேன்.";
@@ -424,6 +467,16 @@ function detectFocusIntent(text) {
   const t = text.toLowerCase();
   const hasFocus = (t.includes("don't disturb") || t.includes("dont disturb") || t.includes("study") || t.includes("focus") || t.includes("padhai"));
   if (!hasFocus) return null;
+
+  // Check if user is asking to turn OFF, stop, cancel, or end focus mode
+  const isStop = /\b(off|stop|end|cancel|exit|close|mudikalam|mudichiko|mudichidu|vendam|venda|band|khatam|rok)\b/.test(t);
+  if (isStop) {
+    return {
+      active: false,
+      durationMinutes: 0,
+      status: "FOCUS_OFF"
+    };
+  }
 
   const match = t.match(/(\d+)\s*(?:minute|min)/);
   const minutes = match ? parseInt(match[1], 10) : 25;

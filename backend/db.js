@@ -61,5 +61,37 @@ CREATE TABLE IF NOT EXISTS emergency_contacts (
   FOREIGN KEY(user_id) REFERENCES users(id)
 );
 `);
+// Add trash metadata columns if they do not exist yet
+const migrations = [
+  "ALTER TABLE diary_entries ADD COLUMN status TEXT DEFAULT 'active';",
+  "ALTER TABLE diary_entries ADD COLUMN deleted_at INTEGER;",
+  "ALTER TABLE diary_entries ADD COLUMN trashed_by INTEGER;",
+  "ALTER TABLE chat_messages ADD COLUMN status TEXT DEFAULT 'active';",
+  "ALTER TABLE chat_messages ADD COLUMN deleted_at INTEGER;",
+  "ALTER TABLE chat_messages ADD COLUMN trashed_by INTEGER;"
+];
+
+for (const sql of migrations) {
+  try {
+    db.exec(sql);
+  } catch (_) {
+    // Column already exists
+  }
+}
+
+// 30-day Trash auto-cleanup retention policy
+function cleanupExpiredTrash(retentionDays = 30) {
+  try {
+    const cutoff = Math.floor(Date.now() / 1000) - (retentionDays * 86400);
+    db.prepare("DELETE FROM diary_entries WHERE status = 'trashed' AND deleted_at < ?").run(cutoff);
+    db.prepare("DELETE FROM chat_messages WHERE status = 'trashed' AND deleted_at < ?").run(cutoff);
+  } catch (err) {
+    console.error("[TRASH CLEANUP ERROR]", err.message);
+  }
+}
+
+cleanupExpiredTrash();
+
+db.cleanupExpiredTrash = cleanupExpiredTrash;
 
 module.exports = db;

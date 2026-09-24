@@ -59,12 +59,21 @@ router.post("/upload", requireAuth, upload.single("file"), (req, res) => {
   res.json(getEntry(info.lastInsertRowid));
 });
 
-// list all entries for the diary screen feed
+// list all entries for the diary screen feed (excludes trashed items)
 router.get("/", requireAuth, (req, res) => {
   const rows = db
-    .prepare("SELECT * FROM diary_entries WHERE user_id = ? ORDER BY created_at DESC")
+    .prepare("SELECT * FROM diary_entries WHERE user_id = ? AND (status IS NULL OR status = 'active') ORDER BY created_at DESC")
     .all(req.userId);
   res.json(rows);
+});
+
+// Soft-delete: Move diary entry to Trash
+router.delete("/:id", requireAuth, (req, res) => {
+  const now = Math.floor(Date.now() / 1000);
+  const info = db
+    .prepare("UPDATE diary_entries SET status = 'trashed', deleted_at = ?, trashed_by = ? WHERE id = ? AND user_id = ?")
+    .run(now, req.userId, req.params.id, req.userId);
+  res.json({ ok: true, trashed: info.changes > 0, id: req.params.id });
 });
 
 function getEntry(id) {

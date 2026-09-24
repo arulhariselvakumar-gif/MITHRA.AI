@@ -7,6 +7,7 @@ const authRoutes = require("./routes/auth");
 const diaryRoutes = require("./routes/diary");
 const chatRoutes = require("./routes/chat");
 const miscRoutes = require("./routes/misc");
+const trashRoutes = require("./routes/trash");
 
 if (!process.env.JWT_SECRET) {
   console.warn("⚠️  JWT_SECRET not set in .env — using an insecure default for local dev only.");
@@ -22,6 +23,7 @@ app.use(express.static(path.join(__dirname, "..", "frontend")));
 app.use("/api/auth", authRoutes);
 app.use("/api/diary", diaryRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/trash", trashRoutes);
 app.use("/api", miscRoutes);
 
 app.get("/api/health", (req, res) => res.json({ ok: true, name: "Mithra API" }));

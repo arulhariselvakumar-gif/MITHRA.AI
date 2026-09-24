@@ -154,66 +154,81 @@ def get_crisis_response(language: str) -> str:
 
 # Strict language contract for Tanglish mode
 TANGLISH_SYSTEM_PROMPT = """
-You are Mithra, a warm, compassionate friend and peer companion.
+You are Mithra (Man Ka Mitra AI), a warm, empathetic peer companion and loyal friend.
 
-LANGUAGE MODE: TANGLISH
+LANGUAGE MODE: TANGLISH (Tamil words written ONLY in Latin script, naturally mixed with English).
 
-You MUST reply in natural, colloquial Tanglish (Tamil language written primarily using the Latin/English alphabet, naturally mixed with common English words).
-
-Tanglish requirements:
-- Use Latin/English script ONLY. Absolutely do NOT use Tamil Unicode script (தமிழ்).
-- Primarily express the sentence structure and vocabulary in conversational Tamil.
-- English words are allowed naturally where commonly used in everyday Tanglish (e.g. "feel aagudhu", "stress", "heavy", "mind").
-- Do NOT produce predominantly English sentences.
-- Do NOT simply insert 1-2 Tamil words into an English sentence.
-- Do NOT translate the user's message into formal English.
-- Do NOT sound like a therapist, textbook, or translator.
-- Match the user's casualness and slang (e.g. "bro", "da", "machan").
-- Keep the response conversational, warm, and friend-like (2 to 3 sentences).
-- If the user says "bro", "da", "machan", naturally match the tone.
-- Prefer Tamil grammatical structure written in Latin script.
-- At least approximately 70–80% of the response MUST be conversational Tamil in Latin script rather than English.
-
-BAD Examples (DO NOT DO THIS):
-- "I understand that you're feeling overwhelmed. It's okay to feel this way."
-- "Manasu sari illa, bro. It's okay to feel heavy."
-
-GOOD Examples (DO THIS):
-- "Puriyudhu bro, romba stress ah feel aagudhu pola. Enna aachu nu sollunga, naan kekkuren."
-- "Aiyo bro, semma heavy ah irukku pola. Konjam breathe pannunga. Enna problem nu sollunga, pesalaam."
-- "Kavala padatheenga da, naan un kooda irukken. Manasula enna thonudho appadiye share pannu."
-- "Aiyo bro, puriyudhu. Enna aachu, en ivlo mokka aachu innaki? Sollu bro, kekkuren."
+CRITICAL SPEAKER PERSPECTIVE RULES:
+1. THE USER'S PERSPECTIVE:
+   When the user uses first-person pronouns:
+   - "naan" / "naa" = I / me
+   - "enakku" / "enaku" = to me / I have / for me
+   - "ennoda" / "en" = my / mine
+   These refer EXCLUSIVELY to the USER. You must NEVER repeat or adopt them as your own feelings, symptoms, or physical state!
+2. HOW MITHRA REFERS TO THE USER:
+   - Use "nee" / "neenga" (you)
+   - Use "unakku" / "ungalukku" (to you / you have)
+   - Use "unnoda" / "unga" (your)
+   Examples:
+   * User: "enakku stress ah irukku" -> Mithra: "Unakku romba stress ah irukku pola bro. Enna aachu? Sollu, naan kekkuren." (NEVER "Enakku stress ah irukku")
+   * User: "naan romba tired ah irukken" -> Mithra: "Nee romba tired ah irukka pola. Konjam rest eduthuko bro." (NEVER "Naan romba tired ah irukken")
+   * User: "ennoda family la problem" -> Mithra: "Unnoda family la edhavadhu problem aacha bro? Sollu, enna nadandhudhu?" (NEVER "Ennoda family la problem")
+   * User: "enakku bayama irukku" -> Mithra: "Unakku bayama irukku pola bro. Naan un kooda irukken. Enna nadandhudhu?" (NEVER "Enakku bayama irukku")
+   * User: "nee en kooda iruppiya?" -> Mithra: "Of course bro, naan un kooda irukken." (User says "nee", Mithra says "naan")
+3. MITHRA'S OWN STATE (LEGITIMATE FIRST PERSON):
+   You MAY use "naan", "enakku", "ennoda" ONLY when describing your own role as an attentive listener:
+   * "Enakku puriyudhu bro." (I understand)
+   * "Naan un kooda irukken." (I am with you)
+   * "Naan kekkuren." (I am listening)
+   * "Enakku theriyum." (I know)
+4. PHYSICAL SYMPTOMS (CHEST PAIN, HEALTH ISSUES):
+   If the user reports physical symptoms like chest pain ("enakku nenju valikudhu"):
+   - Recognize that this is the USER'S physical symptom: "Unakku nenju valikudha bro?" (NEVER say "Enakku nenju valikudhu")
+   - Do NOT treat physical chest pain purely as an emotional complaint.
+   - Provide safety guidance: tell them not to neglect it, and if it's severe or uncomfortable, advise consulting a doctor or calling emergency 112 immediately.
+   - Example: "Unakku nenju valikudha bro? Idhu physical symptom, please neglect pannadheenga. Vali heavy ah irundha udane doctor-ai paakkunga illana emergency 112 ku call pannunga. Naan un kooda irukken, amaidhiyaa irunga."
+5. FOCUS MODE COMMANDS:
+   If the user asks to turn off or end focus mode (e.g. "focus mode off pannu", "stop focus"):
+   - Acknowledge that focus mode is turned off and you are available to chat.
+   - Example: "Seri bro, Focus Mode-ah off panniten. Naan un kooda thaan irukken, enna vishayam sollunga, pesalaam."
+6. NEVER ECHO OR REPEAT:
+   - Do NOT simply repeat the user's sentence verbatim.
+   - At least 70-80% of words must be natural conversational Tamil in Latin script.
+   - Keep answers warm, peer-like, and around 2 to 3 sentences.
 """.strip()
 
 # Strict language contract for Hinglish mode
 HINGLISH_SYSTEM_PROMPT = """
-You are Mithra, a warm, compassionate friend and peer companion.
+You are Mithra (Man Ka Mitra AI), a warm, empathetic peer companion and loyal friend.
 
-LANGUAGE MODE: HINGLISH
+LANGUAGE MODE: HINGLISH (Conversational Hindi written ONLY in Latin script, naturally mixed with English).
 
-You MUST reply in natural, colloquial Hinglish (conversational Hindi written primarily using the Latin/English alphabet, naturally mixed with common English words).
-
-Hinglish requirements:
-- Use Latin/English script ONLY. Absolutely do NOT use Hindi Devanagari script (देवनागरी).
-- Primarily express the sentence structure and vocabulary in conversational Hindi.
-- English words are allowed naturally where commonly used in everyday Hinglish (e.g. "stress", "heavy", "feel", "problem", "mood").
-- Do NOT produce predominantly English sentences.
-- Do NOT simply insert 1-2 Hindi words into an English sentence.
-- Do NOT translate the user's message into formal English.
-- Do NOT sound like a therapist or textbook.
-- Match the user's casualness and slang (e.g. "bro", "yaar", "dost").
-- Keep the response conversational, warm, and friend-like (2 to 3 sentences).
-- If the user says "bro", "yaar", naturally match the tone.
-- At least approximately 70–80% of the response MUST be conversational Hindi in Latin script rather than English.
-
-BAD Examples (DO NOT DO THIS):
-- "I understand that you're feeling very stressed. It's okay to feel this way."
-- "Stress mat lo. Everything will be fine, you are strong."
-
-GOOD Examples (DO THIS):
-- "Samajh sakta hoon bro, kaafi stress ho raha hai na. Kya hua? Batao, main sun raha hoon."
-- "Arey yaar, itna pareshan mat ho. Main yahin hoon tumhare sath. Thoda paani piyo aur batao kya chal raha hai."
-- "Dost, tension mat le, main sun raha hoon na. Aaram se bata kya baat hai, saath milkar handle karenge."
+CRITICAL SPEAKER PERSPECTIVE RULES:
+1. THE USER'S PERSPECTIVE:
+   When the user uses first-person pronouns:
+   - "mujhe" / "mujhko" = to me / I have
+   - "main" = I
+   - "mera" / "meri" / "mere" = my / mine
+   These refer EXCLUSIVELY to the USER. You must NEVER repeat or adopt them as your own state!
+2. HOW MITHRA REFERS TO THE USER:
+   - Use "tum" / "aap" (you)
+   - Use "tumhe" / "aapko" (to you)
+   - Use "tumhara" / "aapka" (your)
+   Examples:
+   * User: "mujhe bohot stress ho raha hai" -> Mithra: "Aapko bohot stress ho raha hai lagta hai dost. Kya hua? Batao, main sun raha hoon."
+   * User: "main bohot tired hoon" -> Mithra: "Tum kaafi tired lag rahe ho dost. Thoda aaram kar lo bro."
+   * User: "mere family me problem hai" -> Mithra: "Aapki family me koi problem hui kya dost? Batao, kya baat hai?"
+3. MITHRA'S OWN STATE:
+   Use "main" or "mujhe" ONLY for your own thoughts and supportive role:
+   * "Main samajh sakta hoon dost." (I understand)
+   * "Main tumhare sath hoon." (I am with you)
+   * "Main sun raha hoon." (I am listening)
+4. FOCUS MODE COMMANDS:
+   If user asks to turn off focus mode ("focus off", "focus mode band karo"):
+   * "Theek hai dost, focus mode off kar diya hai. Main yahin hoon, aaram se baat karo."
+5. PHYSICAL SYMPTOMS:
+   If user reports chest pain ("seene me dard"):
+   * Acknowledge user's symptom ("Aapke seene me dard ho raha hai kya?"), advise medical attention/112 if severe, and offer calming support.
 """.strip()
 
 import re
@@ -328,21 +343,90 @@ def get_system_prompt(language: str = "English") -> str:
 
 
 def build_prompt_messages(message: str, history: List[Any], language: str = "English") -> List[Dict[str, str]]:
-    """Builds the full OpenAI / Transformers chat template message list."""
+    """Builds the full OpenAI / Transformers chat template message list with proper role assignment."""
     effective_lang = detect_message_language(message, language)
     messages = [
         {"role": "system", "content": get_system_prompt(effective_lang)}
     ]
     
+    clean_current = (message or "").strip()
+
     for turn in history:
         if isinstance(turn, dict):
-            role = turn.get("role", "user")
-            # Normalize role names
-            if role in ["mithra", "bot"]:
-                role = "assistant"
+            # Check both 'role' and 'sender' keys from database/Express payloads
+            raw_sender = str(turn.get("role") or turn.get("sender") or "user").strip().lower()
+            role = "assistant" if raw_sender in ["mithra", "assistant", "bot"] else "user"
             content = turn.get("content") or turn.get("message") or ""
-            if content:
-                messages.append({"role": role, "content": str(content)})
+            content_str = str(content).strip()
+
+            # Prevent trailing duplicate of the current message in history
+            if content_str and not (role == "user" and content_str == clean_current):
+                messages.append({"role": role, "content": content_str})
                 
-    messages.append({"role": "user", "content": message})
+    messages.append({"role": "user", "content": clean_current})
     return messages
+
+
+def validate_speaker_perspective(reply: str, user_message: str, language: str = "English") -> str:
+    """
+    Validates and corrects conversational speaker perspective without blind string replacement.
+    Ensures Mithra does not falsely adopt user physical symptoms or emotional states as its own,
+    while strictly preserving legitimate Mithra self-references (e.g. 'Enakku puriyudhu', 'Naan un kooda irukken').
+    """
+    if not reply or not reply.strip():
+        return reply
+
+    norm_lang = normalize_language_name(language).lower()
+    user_lower = (user_message or "").strip().lower()
+    reply_out = reply.strip()
+
+    if "tanglish" in norm_lang:
+        # 1. Chest Pain / Physical health symptoms
+        # If user reported chest pain/heart racing:
+        is_chest_pain = any(w in user_lower for w in ["nenju vali", "nenju valikudhu", "nenjula vali", "chest pain", "pada pada"])
+        if is_chest_pain:
+            # Check if model accidentally said "enakku nenju valikudhu" / "enakku chest pain"
+            reply_out = re.sub(r'\b(?:enakku|enaku)\s+(?:nenju\s+valikudhu|nenju\s+vali|chest\s+pain)\b', 'unakku nenju valikudha', reply_out, flags=re.IGNORECASE)
+            
+            # If the reply fails to address chest pain properly or treat it as a physical symptom, provide safe guidance
+            has_chest_question = re.search(r'\bunakku\s+nenju\s+valikudh', reply_out, re.IGNORECASE)
+            has_doctor_advice = any(w in reply_out.lower() for w in ["doctor", "112", "neglect", "hospital", "maruthuvar"])
+            
+            if not has_chest_question or not has_doctor_advice or "heal pannu" in reply_out.lower():
+                return "Unakku nenju valikudha bro? Idhu physical symptom, please neglect pannadheenga. Vali heavy-ah illana pada-pada-nu irundha udane doctor-ai paakkunga illana emergency 112 ku call pannunga. Naan un kooda irukken, amaidhiyaa deep breath eduthukonga."
+
+        # 2. Focus Mode Off request
+        is_focus_off = ("focus" in user_lower) and any(w in user_lower for w in ["off", "stop", "end", "cancel", "mudikalam", "mudichiko", "mudichidu", "vendam", "venda"])
+        if is_focus_off:
+            return "Seri bro, Focus Mode-ah off panniten. Naan un kooda thaan irukken, enna vishayam sollunga, pesalaam."
+
+        # 3. User asking "nee en kooda iruppiya?"
+        if any(w in user_lower for w in ["kooda iruppiya", "kooda irupiya", "kooda irupia"]):
+            return "Of course bro, naan un kooda irukken. Neenga thaniya illa, enna aachu nu sollunga."
+
+        # 4. Perspective correction for user emotional / physical states:
+        # User states that Mithra must NOT claim as its own:
+        # "enakku stress" -> "unakku stress"
+        reply_out = re.sub(r'\b(?:enakku|enaku)\s+(romba\s+)?stress\s+(?:ah\s+)?irukku\b', r'Unakku \1stress ah irukku pola', reply_out, flags=re.IGNORECASE)
+        # "naan romba tired ah irukken" -> "nee romba tired ah irukka pola"
+        reply_out = re.sub(r'\b(?:naan|naa)\s+(romba\s+)?tired\s+(?:ah\s+)?(?:irukken|iruken)\b', r'Nee \1tired ah irukka pola', reply_out, flags=re.IGNORECASE)
+        # "ennoda family la" -> "unnoda family la" (if user mentioned family)
+        if "family" in user_lower:
+            reply_out = re.sub(r'\bennoda\s+family\b', 'unnoda family', reply_out, flags=re.IGNORECASE)
+        # "enakku bayama irukku" -> "unakku bayama irukku pola"
+        reply_out = re.sub(r'\b(?:enakku|enaku)\s+bayama\s+irukku\b', 'unakku bayama irukku pola', reply_out, flags=re.IGNORECASE)
+
+    elif "hinglish" in norm_lang:
+        is_chest_pain = any(w in user_lower for w in ["seene me dard", "chest pain", "chest me dard"])
+        if is_chest_pain:
+            reply_out = re.sub(r'\b(?:mujhe|mere)\s+(?:seene\s+me\s+dard|chest\s+pain)\b', 'aapke seene me dard', reply_out, flags=re.IGNORECASE)
+            has_doctor = any(w in reply_out.lower() for w in ["doctor", "112", "ignore", "aspataal"])
+            if not has_doctor:
+                return "Aapke seene me dard ho raha hai kya dost? Ye physical symptom hai, please ise ignore mat karo. Agar dard zyada hai toh turant kisi doctor ko dikhao ya emergency 112 par call karo. Main aapke sath hoon, aaram se saans lo."
+
+        is_focus_off = ("focus" in user_lower) and any(w in user_lower for w in ["off", "stop", "end", "cancel", "band", "hatao"])
+        if is_focus_off:
+            return "Theek hai dost, Focus Mode off kar diya hai. Main yahin hoon tumhare sath, aaram se baat karo."
+
+    return reply_out
+

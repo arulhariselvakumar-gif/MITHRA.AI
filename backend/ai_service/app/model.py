@@ -18,6 +18,7 @@ from app.prompts import (
     detect_crisis_intent,
     get_crisis_response,
     detect_message_language,
+    validate_speaker_perspective,
 )
 
 load_dotenv()
@@ -142,6 +143,19 @@ class QwenModelService:
             logger.warning(f"[QWEN] {self.last_error}. Entering DEMO MODE.")
             self.is_live = False
             return
+
+        # 2b. Check if an instance is already running and healthy on host:port
+        try:
+            client = httpx.Client(timeout=2.0)
+            r = client.get(f"{self.server_url}/health")
+            if r.status_code == 200 and r.json().get("status") in ("ok", "ready"):
+                logger.info(f"[QWEN] Existing llama-server found running on {self.server_url}. Verifying live inference...")
+                if self._verify_live_inference():
+                    logger.info("[QWEN] Successfully attached to existing llama-server. Model is LIVE.")
+                    self.is_live = True
+                    return
+        except Exception:
+            pass
 
         # 3. Launch llama-server subprocess
         cmd = [
@@ -275,6 +289,7 @@ class QwenModelService:
         # Step 3: Execute real Qwen3-4B inference via llama-server
         try:
             effective_lang = detect_message_language(message, language)
+            logger.info(f"[INFERENCE REQUEST] lang={effective_lang} histLen={len(history)} msg='{message}'")
             messages = build_prompt_messages(message, history, effective_lang)
             # Tanglish and Hinglish require ~110 tokens for a natural conversational multi-sentence response without cutoff
             token_limit = 110 if ("tanglish" in effective_lang.lower() or "hinglish" in effective_lang.lower()) else min(self.max_tokens, 75)
@@ -311,7 +326,10 @@ class QwenModelService:
                 logger.warning("[QWEN] Model returned empty reply after sanitization. Falling back to DEMO.")
                 return _generate_demo_reply(message, effective_lang)
 
-            return clean_reply
+            # Step 7: Strict speaker perspective validation and physical safety checks
+            validated_reply = validate_speaker_perspective(clean_reply, message, effective_lang)
+            logger.info(f"[INFERENCE RESPONSE] reply='{validated_reply[:100]}...'")
+            return validated_reply
 
         except Exception as exc:
             logger.error(f"[QWEN] LIVE INFERENCE FAILED: {exc}")
@@ -395,17 +413,51 @@ def _generate_demo_reply(message: str, language: str) -> str:
     lang = (language or "English").strip().lower()
     text = message.strip().lower()
 
-    is_stressed = any(w in text for w in ["stress", "stressed", "anxious", "anxiety", "overwhelm", "pressure", "tired", "heavy", "तनाव", "परेशान"])
+    is_chest = any(w in text for w in ["nenju vali", "nenju valikudhu", "nenjula vali", "chest pain", "seene me dard", "pada pada"])
+    is_focus_off = ("focus" in text) and any(w in text for w in ["off", "stop", "end", "cancel", "mudikalam", "mudichiko", "mudichidu", "vendam", "venda", "band", "hatao"])
+    is_focus_on = (not is_focus_off) and any(w in text for w in ["focus", "study", "don't disturb", "dont disturb", "padhai", "padhna"])
+    is_companion = any(w in text for w in ["kooda iruppiya", "kooda irupiya", "kooda irupia", "saath rahoge", "stay with me", "with me"])
+    is_tired = any(w in text for w in ["tired", "thookam", "exhausted", "energy illa", "thak gaya", "thak gayi"])
+    is_family = any(w in text for w in ["family", "veetla", "ghar me", "parivar"])
+    is_stressed = any(w in text for w in ["stress", "stressed", "anxious", "anxiety", "overwhelm", "pressure", "heavy", "kashtam", "तनाव", "परेशान"])
     is_lonely = any(w in text for w in ["lonely", "alone", "nobody", "isolated", "akela", "अकेला"])
     is_greeting = any(text.startswith(w) for w in ["hi", "hello", "hey", "vanakkam", "namaste", "halo"])
-    is_focus = any(w in text for w in ["focus", "study", "don't disturb", "dont disturb", "padhai", "padhna"])
 
-    if is_focus:
+    if is_focus_off:
+        if "tanglish" in lang:
+            return "Seri bro, Focus Mode-ah off panniten. Naan un kooda thaan irukken, enna vishayam sollunga, pesalaam."
+        if "hinglish" in lang:
+            return "Theek hai dost, Focus Mode off kar diya hai. Main yahin hoon, aaram se baat karo."
+        if "tamil" in lang:
+            return "சரி நண்பா, Focus Mode முடித்துவிட்டேன். என்னிடம் பேசலாம்."
+        if "hindi" in lang:
+            return "ठीक है दोस्त, फोकस मोड बंद कर दिया है। मैं सुनने के लिए तैयार हूँ।"
+        return "Okay, I've turned off Focus Mode. I'm right here whenever you want to talk."
+
+    if is_focus_on:
         return "Okay 🤝 I'll stay quiet while you focus. I'll check in after 25 minutes."
 
+    if is_chest:
+        if "tanglish" in lang:
+            return "Unakku nenju valikudha bro? Idhu physical symptom, please neglect pannadheenga. Vali heavy-ah illana pada-pada-nu irundha udane doctor-ai paakkunga illana emergency 112 ku call pannunga. Naan un kooda irukken, amaidhiyaa deep breath eduthukonga."
+        if "hinglish" in lang:
+            return "Aapke seene me dard ho raha hai kya dost? Ye physical symptom hai, please ise ignore mat karo. Agar dard zyada hai toh turant kisi doctor ko dikhao ya emergency 112 par call karo. Main aapke sath hoon, aaram se saans lo."
+        return "Are you having chest pain? That sounds like a physical symptom that shouldn't be ignored. If the pain is sharp or heavy, please see a doctor or contact emergency services (112) right away. I'm here with you, try to take slow, gentle breaths."
+
+    if is_companion:
+        if "tanglish" in lang:
+            return "Of course bro, naan un kooda irukken. Neenga thaniya illa, enna aachu nu sollunga."
+        if "hinglish" in lang:
+            return "Of course dost, main hamesha tumhare sath hoon. Tension mat lo, batao kya hua."
+        return "Of course, I am right here with you. You're not alone, tell me what's on your mind."
+
     if "tanglish" in lang:
+        if is_tired:
+            return "Nee romba tired ah irukka pola. Konjam rest eduthuko bro."
+        if is_family:
+            return "Unnoda family la problem aacha bro? Sollu, enna nadandhudhu?"
         if is_stressed:
-            return "Puriyudhu bro, romba stress ah feel aagudhu pola 💙 Enna aachu nu sollunga, naan kekkuren. Konjam breathe pannunga, naan un kooda irukken."
+            return "Unakku romba stress ah irukku pola bro. Enna aachu? Sollu, naan kekkuren."
         if is_lonely:
             return "Aiyo bro, alone ah feel aagudhu pola. Kooda naan irukken da. Enna aachu nu pesalaam, sollunga."
         if is_greeting:
