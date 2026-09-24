@@ -1,0 +1,11 @@
+# Netlify clean URL redirects for Mithra
+/login      /login.html      200
+/signup     /signup.html     200
+/chat       /chat.html       200
+/diary      /diary.html      200
+/focus      /focus.html      200
+/profile    /profile.html    200
+/emergency  /emergency.html  200
+/language   /language.html   200
+/forgot     /forgot.html     200
+/reset      /reset.html      200

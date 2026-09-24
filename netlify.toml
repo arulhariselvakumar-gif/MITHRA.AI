@@ -1,8 +1,3 @@
 [build]
   publish = "frontend"
-
-# Netlify redirects: handle clean routing for single-page and multi-page assets
-[[redirects]]
-  from = "/api/*"
-  to = "http://localhost:4000/api/:splat"
-  status = 200
+  command = "node scripts/inject-env.js"

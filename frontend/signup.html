@@ -45,6 +45,7 @@
     <div class="link-row">Already have an account? <a href="login.html">Login</a></div>
   </div>
 
+  <script src="js/config.js"></script>
   <script src="js/api.js"></script>
   <script>
     const toggleBtn = document.getElementById("toggle1");
@@ -88,7 +89,17 @@
       } catch (err) {
         errEl.textContent = err.message;
         if (err.message.includes("Failed to fetch") || err.message.includes("NetworkError") || err.message.includes("Something went wrong")) {
-          errEl.innerHTML = `Backend not running on localhost:4000.<br><a href="#" id="guestBtn" style="color:var(--brand);font-weight:700;text-decoration:underline;margin-top:8px;display:inline-block;">👉 Click to continue in Demo Mode</a>`;
+          const backend = typeof getBackendUrl === "function" ? getBackendUrl() : "";
+          const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+          let message = "";
+          if (backend) {
+            message = `Backend server (${backend}) is unreachable.`;
+          } else if (isLocal) {
+            message = "Backend server not running on http://localhost:4000.";
+          } else {
+            message = "Production backend API URL is not configured.";
+          }
+          errEl.innerHTML = `${message}<br><a href="#" id="guestBtn" style="color:var(--brand);font-weight:700;text-decoration:underline;margin-top:8px;display:inline-block;">👉 Click to continue in Demo Mode</a>`;
           document.getElementById("guestBtn").onclick = (ev) => {
             ev.preventDefault();
             const chosenName = document.getElementById("name").value.trim() || "Friend";

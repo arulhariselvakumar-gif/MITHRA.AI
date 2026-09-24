@@ -42,6 +42,7 @@
     <a href="profile.html"><span class="navicon">&#128100;</span>Profile</a>
   </nav>
 
+  <script src="js/config.js"></script>
   <script src="js/api.js"></script>
   <script>
     requireLogin();
@@ -134,12 +135,13 @@
           const tagText = r.auto_logged ? "AI auto-logged" : r.type;
           let body = "";
           if (r.content) body += `<div>${escapeHtml(r.content)}</div>`;
-          if (r.file_path && r.type === "record") body += `<audio controls src="http://localhost:4000${r.file_path}"></audio>`;
+          const bUrl = typeof getBackendUrl === "function" ? getBackendUrl() : "http://localhost:4000";
+          if (r.file_path && r.type === "record") body += `<audio controls src="${bUrl}${r.file_path}"></audio>`;
           if (r.file_path && r.type === "upload") {
             if (/\.(png|jpg|jpeg|gif|webp)$/i.test(r.file_path)) {
-              body += `<img src="http://localhost:4000${r.file_path}" />`;
+              body += `<img src="${bUrl}${r.file_path}" />`;
             } else {
-              body += `<a class="link-btn" href="http://localhost:4000${r.file_path}" target="_blank">View uploaded file</a>`;
+              body += `<a class="link-btn" href="${bUrl}${r.file_path}" target="_blank">View uploaded file</a>`;
             }
           }
           div.innerHTML = `<div class="meta"><span>${fmtTime(r.created_at)}</span><span class="tag">${tagText}</span></div>${body}`;
