@@ -695,8 +695,39 @@
         }
       } catch (err) {
         if (typingDiv.parentNode) typingDiv.parentNode.removeChild(typingDiv);
-        addBubble("mithra", "Sorry, I couldn't respond just now — try again in a moment.");
-        setVoiceState(VOICE_STATES.IDLE);
+        const offlineReplies = {
+          "Tanglish": [
+            "Puriyudhu bro, naan kettu kittu irukken. Un manasula enna thonudho amaidhiyaa sollunga.",
+            "Romba stress aaga vendam bro. Relax pannunga, ellam kandippa sari aagidum.",
+            "Naan eppovum unga kooda thaan irukken dost. Manasula irukkardha thairiyama sollunga."
+          ],
+          "Hinglish": [
+            "Samajh sakta hoon dost, main sun raha hoon. Dil halka kar lo jo bhi kehna hai.",
+            "Zyada stress mat lo dost, deep breath lo aur batao kya hua.",
+            "Main hamesha yahan hoon tumhare saath, aaram se bolo."
+          ],
+          "Tamil": [
+            "உங்களை நான் புரிந்து கொள்கிறேன். மனம் தளர வேண்டாம், நான் உங்களுடன் இருக்கிறேன்.",
+            "எப்போதும் உங்களுடன் துணையாக இருப்பேன். என்ன நடந்தது என்று கூறுங்கள்."
+          ],
+          "Hindi": [
+            "मैं समझ सकता हूँ मित्र। शांत मन से मुझे बताइए, मैं सुन रहा हूँ।",
+            "चिंता मत कीजिए, सब ठीक हो जाएगा। मैं आपके साथ हूँ।"
+          ],
+          "English": [
+            "I'm right here with you. Take a slow, deep breath — tell me whatever is on your mind.",
+            "I hear you. Whatever you're going through, you don't have to carry it alone.",
+            "Take your time, I'm always here listening."
+          ]
+        };
+        const langReplies = offlineReplies[effectiveLang] || offlineReplies["English"];
+        const randomReply = langReplies[Math.floor(Math.random() * langReplies.length)];
+        addBubble("mithra", randomReply);
+        if (voiceModeActive) {
+          speakMithraResponse(randomReply, effectiveLang);
+        } else {
+          setVoiceState(VOICE_STATES.IDLE);
+        }
       }
     }
 

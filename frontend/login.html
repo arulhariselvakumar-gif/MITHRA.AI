@@ -87,6 +87,14 @@
         location.href = "chat.html";
       } catch (err) {
         errEl.textContent = err.message;
+        if (err.message.includes("Failed to fetch") || err.message.includes("NetworkError") || err.message.includes("Something went wrong")) {
+          errEl.innerHTML = `Backend not running on localhost:4000.<br><a href="#" id="guestBtn" style="color:var(--brand);font-weight:700;text-decoration:underline;margin-top:8px;display:inline-block;">👉 Click to continue in Demo Mode</a>`;
+          document.getElementById("guestBtn").onclick = (ev) => {
+            ev.preventDefault();
+            setSession("demo-token", { name: "Friend", email: document.getElementById("email").value || "friend@mithra.ai", language: "English" });
+            location.href = "chat.html";
+          };
+        }
       } finally {
         btn.disabled = false; btn.textContent = "Login";
       }
